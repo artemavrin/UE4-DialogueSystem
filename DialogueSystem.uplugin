@@ -1,0 +1,28 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.6",
+	"FriendlyName": "Dialogue System",
+	"Description": "Dialogue System extends Behavior Tree to help create dialogues.",
+	"Category": "Gameplay",
+	"CreatedBy": "Mavrin Artem",
+	"CreatedByURL": "",
+	"DocsURL": "https://www.youtube.com/playlist?list=PLUngfGDb9OrU1hbePrpxTg8suq_QSgQTH",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"Modules": [
+    {
+      "Name": "DialogueSystem",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault"
+    },
+    {
+      "Name" : "DialogueSystemEditor",
+      "Type" : "Editor"
+	}
+	],
+	"EnabledByDefault": false,
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"Installed": false
+}

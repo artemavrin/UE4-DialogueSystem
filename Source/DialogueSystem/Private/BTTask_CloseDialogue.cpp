@@ -1,0 +1,91 @@
+// Copyright 2015 Mavrin Artem. All Rights Reserved.
+
+#include "DialogueSystemPrivatePCH.h"
+#include "Kismet/GameplayStatics.h"
+#include "BehaviorTree/BTCompositeNode.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "WidgetComponent.h"
+#include "UserWidget.h"
+#include "BTTask_CloseDialogue.h"
+#include "BTComposite_QuestionGroup.h"
+#include "Camera/CameraComponent.h"
+#include "BTTask_ShowPhrases.h"
+#include "BTTask_WaitAnswer.h"
+
+UBTTask_CloseDialogue::UBTTask_CloseDialogue(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	NodeName = "Close Dialogue";
+	bHideCursor = true;
+}
+
+EBTNodeResult::Type UBTTask_CloseDialogue::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	EBTNodeResult::Type NodeResult = EBTNodeResult::Failed;
+
+	if (!DialogueWidget.IsNone())
+	{
+		FName KeyName = DialogueWidget.SelectedKeyName;
+		UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
+		UUserWidget* Widget = Cast<UUserWidget>(BlackboardComp->GetValueAsObject(KeyName));
+		UWidgetComponent* WidgetComp = Cast<UWidgetComponent>(BlackboardComp->GetValueAsObject(KeyName));
+
+		if (Widget && Widget->IsInViewport())
+		{
+			APlayerController* PlayerController = Widget->GetOwningPlayer();
+			PlayerController->bShowMouseCursor = !bHideCursor;
+			FInputModeGameOnly InputMode;
+			PlayerController->SetInputMode(InputMode);
+			Widget->RemoveFromParent();
+		}
+		if (WidgetComp)
+		{
+			Widget = CreateWidget<UUserWidget>(GetWorld(), WidgetComp->GetWidgetClass());
+			APlayerController* PlayerController = Widget->GetOwningPlayer();
+			PlayerController->bShowMouseCursor = false;
+			FInputModeGameOnly InputMode;
+			PlayerController->SetInputMode(InputMode);
+		}
+
+	}
+	// set camera default values
+	if (!PlayerCamera.IsNone())
+	{
+		FName PlayerCameraKeyName = PlayerCamera.SelectedKeyName;
+		UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
+		UCameraComponent* PlayerCameraComp = Cast<UCameraComponent>(BlackboardComp->GetValueAsObject(PlayerCameraKeyName));
+
+		if (PlayerCameraComp)
+		{
+			PlayerCameraComp->SetWorldLocationAndRotation(DefaultCameraLocation, DefaultCameraRotation);
+			UBTTask_ShowPhrases* ShowPhrases = Cast<UBTTask_ShowPhrases>(FirstTaskNode);
+			UBTTask_WaitAnswer* WaitAnswer = Cast<UBTTask_WaitAnswer>(FirstTaskNode);
+			if (ShowPhrases)
+			{
+				ShowPhrases->DefaultCameraLocation = FVector(0.f, 0.f, 0.f);
+			}
+			if (WaitAnswer)
+			{
+				WaitAnswer->DefaultCameraLocation = FVector(0.f, 0.f, 0.f);
+			}
+		}
+	}
+
+	return NodeResult;
+}
+
+FString UBTTask_CloseDialogue::GetStaticDescription() const
+{
+	return FString("Close Dialogue");
+}
+
+
+#if WITH_EDITOR
+
+FName UBTTask_CloseDialogue::GetNodeIconName() const
+{
+	return FName("GraphBreadcrumb.BrowseBack");
+}
+
+
+
+#endif	// WITH_EDITOR

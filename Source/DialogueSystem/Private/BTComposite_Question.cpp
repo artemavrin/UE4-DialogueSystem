@@ -14,39 +14,7 @@ UBTComposite_Question::UBTComposite_Question(const FObjectInitializer& ObjectIni
 
 int32 UBTComposite_Question::GetNextChildHandler(FBehaviorTreeSearchData& SearchData, int32 PrevChild, EBTNodeResult::Type LastResult) const
 {
-	int32 NextChildIdx = BTSpecialChild::ReturnToParent;
-	
-	if (PrevChild == -1)
-	{
-		const UBTCompositeNode* ParentNode = GetParentNode();
-		FText AnswerText = FText::GetEmpty();
-
-		UBTTask_WaitAnswer* AnswerNode = nullptr;
-
-		for (auto& Child : ParentNode->Children)
-		{
-			AnswerNode = Cast<UBTTask_WaitAnswer>(Child.ChildTask);
-			if (AnswerNode)
-			{
-				AnswerText = AnswerNode->GetAnswer();
-				break;
-			}
-		}
-		if (QuestionThumbnail.ToString() == AnswerText.ToString())
-		{
-			NextChildIdx = 0;
-			AnswerNode->ClearAnswer();
-			if (bHideAfterSelect)
-			{
-				SetVisibility(AnswerNode->PlayerController, false);
-			}
-		}
-	}
-	else
-	{
-		NextChildIdx = PrevChild + 1;
-	}
-
+	int32 NextChildIdx = PrevChild+1;
 	if (NextChildIdx == GetChildrenNum() || LastResult == EBTNodeResult::Failed)
 	{
 		NextChildIdx = BTSpecialChild::ReturnToParent;
@@ -66,10 +34,10 @@ bool UBTComposite_Question::GetVisibility(APlayerController* PlayerController)
 	{
 		for (TActorIterator<ADialogueSettings> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 		{
-			ADialogueSettings *DialogueSettings = *ActorItr;
-			if (DialogueSettings->PlayerController == PlayerController)
+			ADialogueSettings *Settings = *ActorItr;
+			if (Settings->PlayerController == PlayerController)
 			{
-				return DialogueSettings->GetPropertyBoolValue(SettingName.ToString());
+				return Settings->GetPropertyBoolValue(SettingName.ToString());
 			}
 			
 		}
@@ -83,10 +51,10 @@ void UBTComposite_Question::SetVisibility(APlayerController* PlayerController, b
 	{
 		for (TActorIterator<ADialogueSettings> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 		{
-			ADialogueSettings *DialogueSettings = *ActorItr;
-			if (DialogueSettings->PlayerController == PlayerController)
+			ADialogueSettings *Settings = *ActorItr;
+			if (Settings->PlayerController == PlayerController)
 			{
-				return DialogueSettings->SetPropertyBoolValue(SettingName.ToString(), NewVisibility);
+				return Settings->SetPropertyBoolValue(SettingName.ToString(), NewVisibility);
 			}
 
 		}

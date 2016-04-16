@@ -10,12 +10,20 @@ UBTTask_WaitAnswer* UDialogueEventListener::GetCurrentBrunch()
 	return WaitAnswerNode;
 }
 
+TSharedRef<SWidget> UDialogueEventListener::RebuildWidget()
+{
+	MyBox = SNew(SBox);
+		
+	return MyBox.ToSharedRef();
+}
+
 #if WITH_EDITOR
 
 const FText UDialogueEventListener::GetPaletteCategory()
 {
 	return NSLOCTEXT("DialogueSystem", "Dialogue", "Dialogue");
 }
+
 #endif
 
 /////////////////////////////////////////////////////

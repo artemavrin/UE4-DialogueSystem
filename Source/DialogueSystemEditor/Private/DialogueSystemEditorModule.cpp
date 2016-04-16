@@ -8,6 +8,7 @@
 #include "DialogueSystemStyle.h"
 #include "QuestBookEditor/QuestBookEditorCustomization.h"
 #include "BehaviorTreeEditor/QuestionCustomization.h"
+#include "BehaviorTreeEditor/ShowPhrasesCustomization.h"
 
 #include "SNotificationList.h"
 #include "NotificationManager.h"

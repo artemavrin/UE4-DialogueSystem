@@ -20,7 +20,6 @@ void UDialogueButton::OnClick()
 	{
 		FText SelectedQuestion = TextBlock->GetText();
 		WaitTask->SetAnswer(SelectedQuestion);
-		//UE_LOG(LogTemp, Warning, TEXT("%s"), *TextBlock->GetText().ToString());
 	}
 }
 

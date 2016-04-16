@@ -221,7 +221,6 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 				Mesh = Cast<USkeletalMeshComponent>(BlackboardComp->GetValueAsObject(MeshKeyName));
 				if (Mesh)
 				{
-					//Mesh->PlayAnimation(DialogueCharacterAnimationOptions.Animation, DialogueCharacterAnimationOptions.bLoop);
 					UAnimInstance *AnimInst = Mesh->GetAnimInstance();
 					if (AnimInst)
 					{
@@ -293,7 +292,9 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 		if (StartPhraseTextBlock)
 		{
 			// first show hole phrase 
+			UE_LOG(LogTemp, Warning, TEXT("#1"));
 			StartPhraseTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ShowPhraseText", "{0}"), StartPhrase));
+			UE_LOG(LogTemp, Warning, TEXT("#1.1"));
 			OwnerActor->GetWorldTimerManager().ClearTimer(TimerHandle);
 			TimerDelegate = FTimerDelegate::CreateUObject(this, &UBTTask_ShowPhrases::ShowNewDialoguePhrase, false);
 			float ShowingTime = DialogueTextOptions.UseGeneralTime ? DialogueTextOptions.GeneralShowingTime : DialogueTextOptions.Phrases[ShowingNumPhrase].ShowingTime;
@@ -317,7 +318,9 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 			StringToDisplay.AppendChar(FullString[0]);
 			if (StartPhraseTextBlock)
 			{
+			UE_LOG(LogTemp, Warning, TEXT("#2"));
 				StartPhraseTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ShowPhraseText", "{0}"), FText::FromString(StringToDisplay)));
+			UE_LOG(LogTemp, Warning, TEXT("#2.2"));
 			}
 			TimerDelegate = FTimerDelegate::CreateUObject(this, &UBTTask_ShowPhrases::ShowNewChar);
 			OwnerActor->GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, DialogueTextOptions.Delay, false);
@@ -326,12 +329,13 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 		{
 			if (StartPhraseTextBlock)
 			{
+			UE_LOG(LogTemp, Warning, TEXT("#3"));
 				StartPhraseTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ShowPhraseText", "{0}"), StartPhrase));
+			UE_LOG(LogTemp, Warning, TEXT("#3.3"));
 			}
 			float ShowingTime = DialogueTextOptions.UseGeneralTime ? DialogueTextOptions.GeneralShowingTime : DialogueTextOptions.Phrases[ShowingNumPhrase].ShowingTime;
 			OwnerActor->GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, ShowingTime, false);
 		}
-
 		//phrase sound
 		if (DialogueTextOptions.Phrases[ShowingNumPhrase].SoundToPlay)
 		{

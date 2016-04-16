@@ -28,24 +28,36 @@ EBTNodeResult::Type UBTTask_CloseDialogue::ExecuteTask(UBehaviorTreeComponent& O
 		UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
 		UUserWidget* Widget = Cast<UUserWidget>(BlackboardComp->GetValueAsObject(KeyName));
 		UWidgetComponent* WidgetComp = Cast<UWidgetComponent>(BlackboardComp->GetValueAsObject(KeyName));
-
-		if (Widget && Widget->IsInViewport())
+		
+		if(!Widget && !WidgetComp)
 		{
-			APlayerController* PlayerController = Widget->GetOwningPlayer();
-			PlayerController->bShowMouseCursor = !bHideCursor;
-			FInputModeGameOnly InputMode;
-			PlayerController->SetInputMode(InputMode);
-			Widget->RemoveFromParent();
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Invalid key for Dialogue Widget !"));
+			return EBTNodeResult::Failed;
 		}
-		if (WidgetComp)
+		
+		if (!Widget && WidgetComp)
 		{
 			Widget = CreateWidget<UUserWidget>(GetWorld(), WidgetComp->GetWidgetClass());
-			APlayerController* PlayerController = Widget->GetOwningPlayer();
-			PlayerController->bShowMouseCursor = false;
-			FInputModeGameOnly InputMode;
-			PlayerController->SetInputMode(InputMode);
+		}
+		
+		APlayerController* PlayerController = Widget->GetOwningPlayer();
+		FInputModeGameOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+		
+		if (Widget && Widget->IsInViewport())
+		{
+			Widget->RemoveFromParent();
 		}
 
+		switch(MouseOptions)
+		{
+		case ECloseDialogueCursorOptions::Show :
+			PlayerController->bShowMouseCursor = true;
+			break;
+		default:
+			PlayerController->bShowMouseCursor = false;
+			break;
+		}
 	}
 	// set camera default values
 	if (!PlayerCamera.IsNone())

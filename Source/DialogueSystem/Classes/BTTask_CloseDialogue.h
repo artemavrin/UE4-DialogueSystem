@@ -27,6 +27,10 @@ class DIALOGUESYSTEM_API UBTTask_CloseDialogue : public UBTTaskNode
 	UPROPERTY(EditInstanceOnly, Category = Camera)
 	FBlackboardKeySelector PlayerCamera;
 	
+	/** Do we show the mouse cursor when the dialogue is closed ? */
+	UPROPERTY(EditInstanceOnly, Category = Mouse)
+	ECloseDialogueCursorOptions MouseOptions;
+	
 	FVector DefaultCameraLocation;
 	FRotator DefaultCameraRotation;
 	UBTTaskNode* FirstTaskNode;

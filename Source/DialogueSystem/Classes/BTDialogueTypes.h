@@ -210,3 +210,12 @@ enum class EWidggetInputMode : uint8
 	GameAndUI,
 };
 
+UENUM()
+enum class ECloseDialogueCursorOptions : uint8
+{
+	/** Hide the mouse cursor */
+	Hide,
+	/** Show the mouse cursor */
+	Show,
+};
+

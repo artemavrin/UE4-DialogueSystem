@@ -2,7 +2,7 @@
 
 #pragma once
 
-#define DIALOGUESYSTEM_MODULE_NAME "DialogueSystemEditor"
+#define DIALOGUESYSTEMEDITOR_MODULE_NAME "DialogueSystemEditor"
 
 #include "ModuleManager.h"
 

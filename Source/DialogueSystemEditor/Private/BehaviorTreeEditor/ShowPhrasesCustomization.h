@@ -43,3 +43,22 @@ private:
 	TSharedPtr<IPropertyHandle> TextEffect;
 	TSharedPtr<IPropertyHandle> Delay;
 };
+
+class FCinematicOptionsCustomization : public IPropertyTypeCustomization
+{
+public:
+	static TSharedRef<IPropertyTypeCustomization> MakeInstance();
+
+	/** IPropertyTypeCustomization interface */
+	virtual void CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
+	virtual void CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
+
+	void OnSettingMatineeChange(FString NewValue);
+	TSharedRef<SWidget> OnGetMatineeList() const;
+	FText GetCurrentMatineeName() const;
+private:
+	/** Property handles of the properties we're editing */
+	TSharedPtr<IPropertyHandle> bPlayMatinee;
+	TSharedPtr<IPropertyHandle> bLoop;
+	TSharedPtr<IPropertyHandle> Matinee;
+};

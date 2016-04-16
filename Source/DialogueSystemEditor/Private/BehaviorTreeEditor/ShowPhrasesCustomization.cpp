@@ -1,6 +1,7 @@
 
 #include "DialogueSystemEditorPrivatePCH.h"
 #include "ShowPhrasesCustomization.h"
+#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
 
 #define LOCTEXT_NAMESPACE "DialogueSystem"
 
@@ -143,6 +144,103 @@ EVisibility FTextOptionsCustomization::GetDelayVisibility() const
 	{
 		return EVisibility::Hidden;
 	}
+}
+
+
+/////////////////////////////
+//FCinematicOptionsCustomization
+
+TSharedRef<IPropertyTypeCustomization> FCinematicOptionsCustomization::MakeInstance()
+{
+	return MakeShareable(new FCinematicOptionsCustomization());
+}
+
+void FCinematicOptionsCustomization::CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+{
+	// We'll set up reset to default ourselves
+	const bool bDisplayResetToDefault = false;
+	const FText DisplayNameOverride = FText::GetEmpty();
+	const FText DisplayToolTipOverride = FText::GetEmpty();
+
+	HeaderRow
+		.NameContent()
+		[
+			StructPropertyHandle->CreatePropertyNameWidget(DisplayNameOverride, DisplayToolTipOverride, bDisplayResetToDefault)
+		];
+}
+
+void FCinematicOptionsCustomization::CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+{
+	bPlayMatinee = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlayMatinee));
+	bLoop = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bLoop));
+	Matinee = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, Matinee));
+
+	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlayMatinee)).ToSharedRef());
+	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bLoop)).ToSharedRef());
+
+	ChildBuilder.AddChildContent(LOCTEXT("Matinee", "Matinee"))
+		.NameContent()
+		[
+			Matinee->CreatePropertyNameWidget()
+		]
+	.ValueContent()
+		.HAlign(HAlign_Fill)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.MaxWidth(109.0f)
+			[
+				SNew(SComboButton)
+				.OnGetMenuContent(this, &FCinematicOptionsCustomization::OnGetMatineeList)
+				.ContentPadding(FMargin(2.0f, 2.0f))
+				.ButtonContent()
+				[
+					SNew(STextBlock)
+					.Text(this, &FCinematicOptionsCustomization::GetCurrentMatineeName)
+					.Font(IDetailLayoutBuilder::GetDetailFont())
+				]
+			]
+		];
+}
+
+void FCinematicOptionsCustomization::OnSettingMatineeChange(FString NewValue)
+{
+	Matinee->SetValueFromFormattedString(NewValue);
+}
+
+TSharedRef<SWidget> FCinematicOptionsCustomization::OnGetMatineeList() const
+{
+	
+	FMenuBuilder MenuBuilder(true, NULL);
+
+	FUIAction ItemAction(FExecuteAction::CreateSP(this, &FCinematicOptionsCustomization::OnSettingMatineeChange, FString("None")));
+	MenuBuilder.AddMenuEntry(FText::FromString(TEXT("None")), TAttribute<FText>(), FSlateIcon(), ItemAction);
+
+	for (TObjectIterator<AMatineeActor> It; It; ++It)
+	{
+		AMatineeActor* MatineeActor = *It;
+		FUIAction ItemAction(FExecuteAction::CreateSP(this, &FCinematicOptionsCustomization::OnSettingMatineeChange, MatineeActor->GetName()));
+		MenuBuilder.AddMenuEntry(FText::FromString(MatineeActor->GetName()), TAttribute<FText>(), FSlateIcon(), ItemAction);
+	}
+
+	return MenuBuilder.MakeWidget();
+}
+
+FText FCinematicOptionsCustomization::GetCurrentMatineeName() const
+{
+	FText SettingName;
+	Matinee->GetValueAsDisplayText(SettingName);
+	for (TObjectIterator<AMatineeActor> It; It; ++It)
+	{
+		AMatineeActor* MatineeActor = *It;
+		if (SettingName.EqualTo(FText::FromString(MatineeActor->GetName())))
+		{
+			return SettingName;
+		}
+	}
+
+	Matinee->SetValueFromFormattedString(FString("None"));
+	return FText::FromString("None");
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -37,7 +37,6 @@ TArray<FString> ADialogueSettings::GetBoolVariables()
 	for (TFieldIterator<UBoolProperty> PropIt(GetClass(), EFieldIteratorFlags::IncludeSuper); PropIt; ++PropIt)
 	{
 		UBoolProperty* Property = *PropIt;
-		//UE_LOG(LogTemp, Warning, TEXT("%s : %s"), *Property->GetFullName(), Property->IsBasedOnArchetype(this) ? TEXT("true") : TEXT("false"));
 		int32 Index = Property->GetFullName().Find(FString(TEXT("/Script/Engine.Actor")));
 		if (Index == INDEX_NONE)
 		{

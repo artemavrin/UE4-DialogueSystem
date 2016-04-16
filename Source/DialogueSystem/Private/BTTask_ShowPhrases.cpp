@@ -4,6 +4,7 @@
 #include "SoundDefinitions.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
 #include "UserWidget.h"
 #include "WidgetComponent.h"
 #include "BTDialogueTypes.h"
@@ -18,6 +19,7 @@
 #include "BTTask_WaitAnswer.h"
 #include "BTTask_CloseDialogue.h"
 #include "Runtime/CoreUObject/Public/Misc/UObjectToken.h"
+#include "UObjectToken.h"
 
 #define LOCTEXT_NAMESPACE "DialogueSystem" 
 
@@ -67,6 +69,16 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 		Widget = Cast<UUserWidget>(BlackboardComp->GetValueAsObject(WidgetKeyName));
 		WidgetComp = Cast<UWidgetComponent>(BlackboardComp->GetValueAsObject(WidgetKeyName));
 		OwnerActor = OwnerComp.GetOwner();
+
+		if (!Widget && !WidgetComp)
+		{
+#if WITH_EDITOR
+			FMessageLog("PIE").Error()
+				->AddToken(FTextToken::Create(LOCTEXT("InvalidWidgetKey", "Invalid key for Dialogue Widget in ")))
+				->AddToken(FUObjectToken::Create((UObject*)OwnerComp.GetCurrentTree()));
+#endif
+			return EBTNodeResult::Failed;
+		}
 
 		if (WidgetComp)
 		{
@@ -190,7 +202,7 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 			// camera
 			if (DialogueCameraOptions.bUseCamera)
 			{
-				if (!DialogueCameraOptions.CameraToView.IsNone() && !DialogueCameraOptions.PlayerCamera.IsNone())
+				if (!DialogueCameraOptions.CameraToView.IsNone() && !DialogueCameraOptions.PlayerCamera.IsNone() && !DialogueCinematicOptions.bPlayMatinee)
 				{
 					FName CameraToViewKeyName = DialogueCameraOptions.CameraToView.SelectedKeyName;
 					BlackboardComp = OwnerComp.GetBlackboardComponent();
@@ -212,7 +224,23 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 						}
 					}
 				}
+				
 			}
+			// cinematic
+			if (DialogueCinematicOptions.bPlayMatinee && !DialogueCinematicOptions.Matinee.Equals("None"))
+			{
+				for (TActorIterator<AMatineeActor> It(OwnerActor->GetWorld()); It; ++It)
+				{
+					MatineeActor = *It;
+					if (MatineeActor && MatineeActor->GetName().Equals(DialogueCinematicOptions.Matinee))
+					{
+						MatineeActor->bLooping = DialogueCinematicOptions.bLoop;
+						MatineeActor->Play();
+						break;
+					}
+				}
+			}
+
 			// character animation
 			if (DialogueCharacterAnimationOptions.bPlayAnimation && !DialogueCharacterAnimationOptions.Mesh.IsNone() && DialogueCharacterAnimationOptions.Animation != nullptr)
 			{
@@ -221,7 +249,6 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 				Mesh = Cast<USkeletalMeshComponent>(BlackboardComp->GetValueAsObject(MeshKeyName));
 				if (Mesh)
 				{
-					//Mesh->PlayAnimation(DialogueCharacterAnimationOptions.Animation, DialogueCharacterAnimationOptions.bLoop);
 					UAnimInstance *AnimInst = Mesh->GetAnimInstance();
 					if (AnimInst)
 					{
@@ -374,6 +401,12 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 			GeneralAudioComponent->Deactivate();
 			GeneralAudioComponent->DestroyComponent();
 		}
+
+		// cinematic
+		if (DialogueCinematicOptions.bPlayMatinee && MatineeActor)
+		{
+			MatineeActor->Stop();
+		}
 	}
 }
 
@@ -424,7 +457,6 @@ void UBTTask_ShowPhrases::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	}
 	if (bTextFinished && bCharacterAnimationFinished)
 	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		bCharacterAnimationFinished = false;
 		bTextFinished = false;
 		ShowingNumPhrase = 0;
@@ -438,6 +470,7 @@ void UBTTask_ShowPhrases::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 				EventListener->ShowPhrasesNode = nullptr;
 			}
 		}
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 }
 

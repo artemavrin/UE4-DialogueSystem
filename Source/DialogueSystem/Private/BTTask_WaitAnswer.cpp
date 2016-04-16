@@ -13,6 +13,8 @@
 #include "GameFramework/PlayerController.h"
 #include "BTTask_ShowPhrases.h"
 #include "BTTask_CloseDialogue.h"
+#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
+#include "UObjectToken.h"
 
 #define LOCTEXT_NAMESPACE "DialogueSystem"
 
@@ -32,6 +34,7 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 {
 	EBTNodeResult::Type NodeResult = !bAnswerDone ? EBTNodeResult::InProgress : NodeResult = EBTNodeResult::Succeeded;
 	TimerCount = Timer;
+	AActor* OwnerActor = OwnerComp.GetOwner();
 
 	if (!DialogueWidget.IsNone())
 	{
@@ -40,6 +43,16 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 		Widget = Cast<UUserWidget>(BlackboardComp->GetValueAsObject(WidgetKeyName));
 		WidgetComp = Cast<UWidgetComponent>(BlackboardComp->GetValueAsObject(WidgetKeyName));
 		UDialogueButton* FirstButton = nullptr;
+
+		if (!Widget && !WidgetComp)
+		{
+#if WITH_EDITOR
+			FMessageLog("PIE").Error()
+				->AddToken(FTextToken::Create(LOCTEXT("InvalidWidgetKey", "Invalid key for Dialogue Widget in ")))
+				->AddToken(FUObjectToken::Create((UObject*)OwnerComp.GetCurrentTree()));
+#endif
+			return EBTNodeResult::Failed;
+		}
 
 		if (WidgetComp)
 		{
@@ -95,10 +108,16 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 					if (CBTNode)
 					{
 						int32 ButtonNumber = 0;
-						for (auto& Child : CBTNode->Children)
+						for (int32 Index = 0; Index != CBTNode->Children.Num(); ++Index)
 						{
+							auto& Child = CBTNode->Children[Index];
 							UBTComposite_Question* Question = Cast<UBTComposite_Question>(Child.ChildComposite);
-							if (Question && Question->Children.Num() > 0 && Question->GetVisibility(PlayerController))
+							bool bDecoratorOk = CBTNode->DoDecoratorsAllowExecution(OwnerComp, OwnerComp.GetActiveInstanceIdx(), Index);
+							if (Question 
+								&& Question->Children.Num() > 0 
+								&& Question->GetVisibility(PlayerController) 
+								&& Question->bVisible 
+								&& bDecoratorOk)
 							{
 								UDialogueButton *NewSampleButton = NewObject<UDialogueButton>(this, NAME_None, SampleButton->GetFlags(), SampleButton);
 								UTextBlock *NewSampleTextBlock = NewObject<UTextBlock>(this, NAME_None, SampleTextBlock->GetFlags(), SampleTextBlock);
@@ -177,6 +196,21 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 
 		}
 
+		// cinematic
+		if (DialogueCinematicOptions.bPlayMatinee && !DialogueCinematicOptions.Matinee.Equals("None"))
+		{
+			for (TActorIterator<AMatineeActor> It(OwnerActor->GetWorld()); It; ++It)
+			{
+				MatineeActor = *It;
+				if (MatineeActor && MatineeActor->GetName().Equals(DialogueCinematicOptions.Matinee))
+				{
+					MatineeActor->bLooping = DialogueCinematicOptions.bLoop;
+					MatineeActor->Play();
+					break;
+				}
+			}
+		}
+
 		// camera
 		if (DialogueCameraOptions.bUseCamera)
 		{
@@ -212,7 +246,11 @@ void UBTTask_WaitAnswer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 {
 	if (bAnswerDone)
 	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		// cinematic
+		if (DialogueCinematicOptions.bPlayMatinee && MatineeActor)
+		{
+			MatineeActor->Stop();
+		}
 		// Event Listener
 		UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueEventListener"));
 		if (DialogueEventListener != nullptr)
@@ -227,6 +265,7 @@ void UBTTask_WaitAnswer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		{
 			Widget->SetVisibility(ESlateVisibility::Hidden);
 		}
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 
 	TimerCount = TimerCount > 0 ? TimerCount - DeltaSeconds : 0;

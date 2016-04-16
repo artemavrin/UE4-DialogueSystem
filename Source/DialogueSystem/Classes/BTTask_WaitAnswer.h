@@ -59,6 +59,10 @@ class DIALOGUESYSTEM_API UBTTask_WaitAnswer : public UBTTaskNode
 	UPROPERTY(EditInstanceOnly, Category = Dialogue)
 	FBTDialogueCameraOptions DialogueCameraOptions;
 
+	/** Dialogue cinematic options */
+	UPROPERTY(EditInstanceOnly, Category = Dialogue)
+	FBTDialogueCinematicOptions DialogueCinematicOptions;
+
 	FVector DefaultCameraLocation;
 	FRotator DefaultCameraRotation;
 
@@ -72,6 +76,7 @@ private:
 	float TimerCount;
 	bool bIsUserWidget;
 	UUserWidget* Widget;
+	AMatineeActor* MatineeActor;
 
 public:
 	APlayerController* PlayerController;

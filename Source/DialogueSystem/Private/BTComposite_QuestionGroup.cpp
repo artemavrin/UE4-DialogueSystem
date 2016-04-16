@@ -4,6 +4,10 @@
 #include "BTTask_WaitAnswer.h"
 #include "BTComposite_QuestionGroup.h"
 
+#include "UObjectToken.h"
+
+#define LOCTEXT_NAMESPACE "DialogueSystem" 
+
 UBTComposite_QuestionGroup::UBTComposite_QuestionGroup(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	NodeName = "QuestionGroup";
@@ -14,6 +18,7 @@ UBTComposite_QuestionGroup::UBTComposite_QuestionGroup(const FObjectInitializer&
 int32 UBTComposite_QuestionGroup::GetNextChildHandler(FBehaviorTreeSearchData& SearchData, int32 PrevChild, EBTNodeResult::Type LastResult) const
 {
 	int32 NextChildIdx = PrevChild + 1;
+	UBTTask_WaitAnswer* AnswerNode = nullptr;
 
 	if (PrevChild == -1)
 	{
@@ -21,12 +26,24 @@ int32 UBTComposite_QuestionGroup::GetNextChildHandler(FBehaviorTreeSearchData& S
 
 		for (auto& Child : Children)
 		{
-			UBTTask_WaitAnswer* AnswerNode = Cast<UBTTask_WaitAnswer>(Child.ChildTask);
+			AnswerNode = Cast<UBTTask_WaitAnswer>(Child.ChildTask);
 			if (AnswerNode)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("#1.1"));
 				NextChildIdx = PrevChild + 1;
 				break;
 			}
+		}
+		if (!AnswerNode) {
+#if WITH_EDITOR
+			FMessageLog("PIE").Error()
+				->AddToken(FTextToken::Create(LOCTEXT("GetAnswerNode", "Node ")))
+				->AddToken(FUObjectToken::Create(this))
+				->AddToken(FTextToken::Create(LOCTEXT("ErrorTree", " in ")))
+				->AddToken(FUObjectToken::Create((UObject*)SearchData.OwnerComp.GetCurrentTree()))
+				->AddToken(FTextToken::Create(LOCTEXT("QuestionGroupHasNoAnswerNode", "has no Wait Answer node!")));
+#endif
+			return BTSpecialChild::ReturnToParent;
 		}
 	}
 
@@ -56,3 +73,5 @@ FName UBTComposite_QuestionGroup::GetNodeIconName() const
 }
 
 #endif
+
+#undef LOCTEXT_NAMESPACE

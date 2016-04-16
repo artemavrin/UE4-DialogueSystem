@@ -26,13 +26,13 @@ class DIALOGUESYSTEM_API UBTTask_WaitAnswer : public UBTTaskNode
 	void ClearAnswer();
 	FText GetAnswer();
 
-	UFUNCTION(BlueprintCallable, Category = "DialogueSystem")
+	UFUNCTION(BlueprintCallable, Category = "DialogueSystem|Dialogue")
 	void SetAnswer(UDialogueButton* DialogueButton);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "DialogueSystem")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "DialogueSystem|Dialogue")
 	float GetTimer();
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "DialogueSystem")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "DialogueSystem|Dialogue")
 	bool HasTimer();
 
 	/** Dialogue widget */

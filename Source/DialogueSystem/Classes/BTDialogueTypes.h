@@ -24,6 +24,10 @@ struct DIALOGUESYSTEM_API FBTDialogueTextPhrase
 	UPROPERTY(EditInstanceOnly, meta = (MultiLine = true), Category = Text)
 	FText Phrase;
 
+	/** CUE to play */
+	UPROPERTY(EditInstanceOnly, Category = Sound)
+	USoundCue* SoundToPlay;
+
 	/** How long to show the phrase */
 	UPROPERTY(EditInstanceOnly, meta = (UIMin = 0, ClampMin = 0), Category = Text)
 	float ShowingTime;
@@ -77,9 +81,13 @@ struct DIALOGUESYSTEM_API FBTDialogueSoundOptions
 {
 	GENERATED_USTRUCT_BODY()
 
-	/** Enable to play sound */
+	/** Enable to play general sound */
 	UPROPERTY(EditInstanceOnly, Category = Sound)
 	bool bPlaySound;
+
+	/** Enable to stop sound in the end of all phrases*/
+	UPROPERTY(EditInstanceOnly, Category = Sound)
+	bool bStopInEnd;
 
 	/** CUE to play */
 	UPROPERTY(EditInstanceOnly, Category = Sound)

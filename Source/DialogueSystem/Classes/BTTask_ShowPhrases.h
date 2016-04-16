@@ -24,7 +24,7 @@ class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode
 	virtual FString GetStaticDescription() const override;
 	
 	void ShowNewDialoguePhrase(bool bSkip);
-	void ShowNewChar(bool bSkip);
+	void ShowNewChar();
 	void SaveDefaultCameraDataForAll(UBTNode* Node);
 	void SaveDefaultCameraData(UCameraComponent* PlayerCamera);
 
@@ -67,10 +67,9 @@ class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode
 	int32 ShowingNumPhrase;
 	int32 PhrasesCount;
 	bool bTextFinished;
-	bool bSoundStarted;
 	bool bIsUserWidget;
-	float SoundDuration;
 	bool bCharacterAnimationStarted;
+	bool bShowingFullPhrase;
 	float CharacterAnimationDuration;
 
 	AActor* OwnerActor;
@@ -79,8 +78,8 @@ class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode
 	UWidget* DialoguePhraseSlot;
 	UWidget* DialogueImageSlot;
 	UWidget* DialogueNameSlot;
-	UAudioComponent* AudioComponent;
-	AAIController* AIController;
+	UAudioComponent* GeneralAudioComponent;
+	UAudioComponent* PhraseAudioComponent;
 
 	int32 CurrentCharNum;
 	TArray<TCHAR> FullString;

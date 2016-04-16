@@ -12,7 +12,6 @@
 #include "TextBlock.h"
 #include "Runtime/Engine/Classes/GameFramework/Pawn.h"
 #include "Runtime/Engine/Classes/GameFramework/Actor.h"
-#include "Runtime/AIModule/Classes/AIController.h"
 #include "BTTask_ShowPhrases.h"
 #include "BTComposite_QuestionGroup.h"
 #include "Image.h"
@@ -49,9 +48,7 @@ UBTTask_ShowPhrases::UBTTask_ShowPhrases(const FObjectInitializer& ObjectInitial
 	DialogueTextOptions.Delay = 0.07f;
 	ShowingNumPhrase = 0;
 	bTextFinished = false;
-	bSoundStarted = false;
 	bCharacterAnimationStarted = false;
-	SoundDuration = 0;
 	bNotifyTick = true;
 	bShowPropertyDetails = true;
 }
@@ -129,9 +126,14 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 								{
 									StartPhraseTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ShowPhraseText", "{0}"), FText::FromString(StringToDisplay)));
 								}
-								TimerDelegate = FTimerDelegate::CreateUObject(this, &UBTTask_ShowPhrases::ShowNewChar, false);
+								TimerDelegate = FTimerDelegate::CreateUObject(this, &UBTTask_ShowPhrases::ShowNewChar);
 								OwnerActor->GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, DialogueTextOptions.Delay, false);
 							}
+						}
+						// play phrase sound 
+						if (DialogueTextOptions.Phrases[ShowingNumPhrase].SoundToPlay)
+						{
+							PhraseAudioComponent = UGameplayStatics::SpawnSound2D(GetWorld(), DialogueTextOptions.Phrases[ShowingNumPhrase].SoundToPlay);
 						}
 					}
 					else
@@ -177,20 +179,13 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 					DialogueImageSlot->SetVisibility(ESlateVisibility::Hidden);
 				}
 			}
-			// sound
+			// general sound
 			if (DialogueSoundOptions.bPlaySound)
 			{
-				AIController = OwnerComp.GetAIOwner();
-
-				if (DialogueSoundOptions.SoundToPlay && AIController)
+				if (DialogueSoundOptions.SoundToPlay)
 				{
-					if (APawn* MyPawn = AIController->GetPawn())
-					{
-						AudioComponent = UGameplayStatics::SpawnSoundAttached(DialogueSoundOptions.SoundToPlay, MyPawn->GetRootComponent());
-						SoundDuration = DialogueSoundOptions.SoundToPlay->GetDuration();
-					}
+					GeneralAudioComponent = UGameplayStatics::SpawnSound2D(GetWorld(), DialogueSoundOptions.SoundToPlay);
 				}
-				bSoundStarted = true;
 			}
 			// camera
 			if (DialogueCameraOptions.bUseCamera)
@@ -282,7 +277,6 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 		else
 		{
 			bTextFinished = true;
-			bSoundStarted = true;
 			NodeResult = EBTNodeResult::Failed;
 		}
 	}
@@ -292,6 +286,22 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 
 void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 {
+	if (bSkip && DialogueTextOptions.TextEffect == ETextEffect::Typewriter && !bShowingFullPhrase)
+	{
+		FText StartPhrase = DialogueTextOptions.Phrases[ShowingNumPhrase].Phrase;
+		UTextBlock* StartPhraseTextBlock = Cast<UTextBlock>(DialoguePhraseSlot);
+		if (StartPhraseTextBlock)
+		{
+			// first show hole phrase 
+			StartPhraseTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ShowPhraseText", "{0}"), StartPhrase));
+			OwnerActor->GetWorldTimerManager().ClearTimer(TimerHandle);
+			TimerDelegate = FTimerDelegate::CreateUObject(this, &UBTTask_ShowPhrases::ShowNewDialoguePhrase, false);
+			float ShowingTime = DialogueTextOptions.UseGeneralTime ? DialogueTextOptions.GeneralShowingTime : DialogueTextOptions.Phrases[ShowingNumPhrase].ShowingTime;
+			OwnerActor->GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, ShowingTime, false);
+		}
+		bShowingFullPhrase = true;
+		return;
+	}
 	ShowingNumPhrase++;
 	if (ShowingNumPhrase <= PhrasesCount)
 	{
@@ -301,6 +311,7 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 
 		if (DialogueTextOptions.TextEffect == ETextEffect::Typewriter && DialogueTextOptions.Delay > 0)
 		{
+			OwnerActor->GetWorldTimerManager().ClearTimer(TimerHandle);
 			CurrentCharNum = 1; StringToDisplay = "";
 			FullString = StartPhrase.ToString().GetCharArray();
 			StringToDisplay.AppendChar(FullString[0]);
@@ -308,7 +319,7 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 			{
 				StartPhraseTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ShowPhraseText", "{0}"), FText::FromString(StringToDisplay)));
 			}
-			TimerDelegate = FTimerDelegate::CreateUObject(this, &UBTTask_ShowPhrases::ShowNewChar, false);
+			TimerDelegate = FTimerDelegate::CreateUObject(this, &UBTTask_ShowPhrases::ShowNewChar);
 			OwnerActor->GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, DialogueTextOptions.Delay, false);
 		}
 		else
@@ -321,23 +332,14 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 			OwnerActor->GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, ShowingTime, false);
 		}
 
-		if (AudioComponent != NULL && bSkip && DialogueSoundOptions.bPlaySound)
+		//phrase sound
+		if (DialogueTextOptions.Phrases[ShowingNumPhrase].SoundToPlay)
 		{
-			AudioComponent->Deactivate();
-			AudioComponent->DestroyComponent();
-			float AudioStartTime = 0;
-			for (int32 i = 0; i < ShowingNumPhrase; i++)
-			{
-				AudioStartTime += DialogueTextOptions.UseGeneralTime ? DialogueTextOptions.GeneralShowingTime : DialogueTextOptions.Phrases[i].ShowingTime;
-			}
-			SoundDuration = DialogueSoundOptions.SoundToPlay->GetDuration() - AudioStartTime;
-			if (SoundDuration > 0.0f)
-			{
-				//AudioComponent->Play(AudioStartTime);
-				APawn* MyPawn = AIController->GetPawn();
-				AudioComponent = UGameplayStatics::SpawnSoundAttached(DialogueSoundOptions.SoundToPlay, MyPawn->GetRootComponent(), NAME_None, FVector(ForceInit), FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true, 1.f, 1.f, AudioStartTime);
-			}
+			PhraseAudioComponent->Deactivate();
+			PhraseAudioComponent->DestroyComponent();
+			PhraseAudioComponent = UGameplayStatics::SpawnSound2D(GetWorld(), DialogueTextOptions.Phrases[ShowingNumPhrase].SoundToPlay);
 		}
+		bShowingFullPhrase = false;
 	}
 	else
 	{
@@ -362,16 +364,20 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 			}
 		}
 		bTextFinished = true;
-		if (AudioComponent != NULL && bSkip && DialogueSoundOptions.bPlaySound)
+		if (DialogueTextOptions.Phrases[ShowingNumPhrase-1].SoundToPlay)
 		{
-			AudioComponent->Deactivate();
-			AudioComponent->DestroyComponent();
-			SoundDuration = 0.0f;
+			PhraseAudioComponent->Deactivate();
+			PhraseAudioComponent->DestroyComponent();
+		}
+		if (GeneralAudioComponent != NULL && DialogueSoundOptions.bPlaySound && DialogueSoundOptions.bStopInEnd)
+		{
+			GeneralAudioComponent->Deactivate();
+			GeneralAudioComponent->DestroyComponent();
 		}
 	}
 }
 
-void UBTTask_ShowPhrases::ShowNewChar(bool bSkip)
+void UBTTask_ShowPhrases::ShowNewChar()
 {
 	StringToDisplay.AppendChar(FullString[CurrentCharNum]);
 	UTextBlock* StartPhraseTextBlock = Cast<UTextBlock>(DialoguePhraseSlot);
@@ -395,17 +401,12 @@ void UBTTask_ShowPhrases::ShowNewChar(bool bSkip)
 void UBTTask_ShowPhrases::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
-	bool bSoundFinished = true;
 	bool bCharacterAnimationFinished = true;
-	if (DialogueSoundOptions.bPlaySound)
-	{
-		SoundDuration -= DeltaSeconds;
-		bSoundFinished = SoundDuration <= 0.0f && bSoundStarted ? true : false;
-	}
+
 	if (DialogueCharacterAnimationOptions.bPlayAnimation)
 	{
 		CharacterAnimationDuration -= DeltaSeconds;
-		if (CharacterAnimationDuration <=0.0f && DialogueCharacterAnimationOptions.bLoop && (!bTextFinished || !bSoundFinished))
+		if (CharacterAnimationDuration <=0.0f && DialogueCharacterAnimationOptions.bLoop && !bTextFinished)
 		{
 			UAnimInstance *AnimInst = Mesh->GetAnimInstance();
 			if (AnimInst)
@@ -419,16 +420,14 @@ void UBTTask_ShowPhrases::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 			UAnimSequenceBase* SequenceBase = DialogueCharacterAnimationOptions.Animation;
 			CharacterAnimationDuration = SequenceBase->SequenceLength / SequenceBase->RateScale;
 		}
-		bCharacterAnimationFinished = (CharacterAnimationDuration <= 0.0f && bCharacterAnimationStarted) || (!DialogueCharacterAnimationOptions.bWaitEndOfAnimation && bTextFinished && bSoundFinished) ? true : false;
+		bCharacterAnimationFinished = (CharacterAnimationDuration <= 0.0f && bCharacterAnimationStarted) || (!DialogueCharacterAnimationOptions.bWaitEndOfAnimation && bTextFinished) ? true : false;
 	}
-	if (bTextFinished && bSoundFinished && bCharacterAnimationFinished)
+	if (bTextFinished && bCharacterAnimationFinished)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		bCharacterAnimationFinished = false;
 		bTextFinished = false;
-		bSoundStarted = false;
 		ShowingNumPhrase = 0;
-		SoundDuration = 0;
 		UWidgetTree* WidgetTree = Widget->WidgetTree;
 		UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueEventListener"));
 		if (DialogueEventListener != nullptr)

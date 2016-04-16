@@ -21,11 +21,19 @@ public:
 	UBTTask_ShowPhrases* ShowPhrasesNode;
 	UBTTask_WaitAnswer* WaitAnswerNode;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "DialogueSystem")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "DialogueSystem|Dialogue")
 	UBTTask_WaitAnswer* GetCurrentBrunch();
 
 #if WITH_EDITOR
 	virtual const FText GetPaletteCategory() override;
 #endif
+
+protected:
+	//~ Begin UWidget Interface
+	virtual TSharedRef<SWidget> RebuildWidget() override;
+	//~ End UWidget Interface
+
+protected:
+	TSharedPtr<SBox> MyBox;
 
 };

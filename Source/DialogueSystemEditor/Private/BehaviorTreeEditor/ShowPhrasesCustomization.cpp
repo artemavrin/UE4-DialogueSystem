@@ -210,7 +210,6 @@ void FCinematicOptionsCustomization::OnSettingMatineeChange(FString NewValue)
 
 TSharedRef<SWidget> FCinematicOptionsCustomization::OnGetMatineeList() const
 {
-	
 	FMenuBuilder MenuBuilder(true, NULL);
 
 	FUIAction ItemAction(FExecuteAction::CreateSP(this, &FCinematicOptionsCustomization::OnSettingMatineeChange, FString("None")));
@@ -219,8 +218,8 @@ TSharedRef<SWidget> FCinematicOptionsCustomization::OnGetMatineeList() const
 	for (TObjectIterator<AMatineeActor> It; It; ++It)
 	{
 		AMatineeActor* MatineeActor = *It;
-		FUIAction ItemAction(FExecuteAction::CreateSP(this, &FCinematicOptionsCustomization::OnSettingMatineeChange, MatineeActor->GetName()));
-		MenuBuilder.AddMenuEntry(FText::FromString(MatineeActor->GetName()), TAttribute<FText>(), FSlateIcon(), ItemAction);
+		FUIAction Action(FExecuteAction::CreateSP(this, &FCinematicOptionsCustomization::OnSettingMatineeChange, MatineeActor->GetName()));
+		MenuBuilder.AddMenuEntry(FText::FromString(MatineeActor->GetName()), TAttribute<FText>(), FSlateIcon(), Action);
 	}
 
 	return MenuBuilder.MakeWidget();

@@ -66,10 +66,10 @@ bool UBTComposite_Question::GetVisibility(APlayerController* PlayerController)
 	{
 		for (TActorIterator<ADialogueSettings> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 		{
-			ADialogueSettings *DialogueSettings = *ActorItr;
-			if (DialogueSettings->PlayerController == PlayerController)
+			ADialogueSettings *Settings = *ActorItr;
+			if (Settings->PlayerController == PlayerController)
 			{
-				return DialogueSettings->GetPropertyBoolValue(SettingName.ToString());
+				return Settings->GetPropertyBoolValue(SettingName.ToString());
 			}
 			
 		}
@@ -83,10 +83,10 @@ void UBTComposite_Question::SetVisibility(APlayerController* PlayerController, b
 	{
 		for (TActorIterator<ADialogueSettings> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 		{
-			ADialogueSettings *DialogueSettings = *ActorItr;
-			if (DialogueSettings->PlayerController == PlayerController)
+			ADialogueSettings *Settings = *ActorItr;
+			if (Settings->PlayerController == PlayerController)
 			{
-				return DialogueSettings->SetPropertyBoolValue(SettingName.ToString(), NewVisibility);
+				return Settings->SetPropertyBoolValue(SettingName.ToString(), NewVisibility);
 			}
 
 		}

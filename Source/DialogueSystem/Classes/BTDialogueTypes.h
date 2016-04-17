@@ -149,6 +149,25 @@ struct DIALOGUESYSTEM_API FBTDialogueCameraOptions
 };
 
 USTRUCT()
+struct DIALOGUESYSTEM_API FBTDialogueCinematicOptions
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** Enable to play Matinee */
+	UPROPERTY(EditInstanceOnly, Category = Cinematic)
+	bool bPlayMatinee;
+
+	/** Loop Matinee */
+	UPROPERTY(EditInstanceOnly, Category = Cinematic)
+	bool bLoop;
+
+	/** Matinee*/
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Cinematic)
+	FString Matinee;
+
+};
+
+USTRUCT()
 struct DIALOGUESYSTEM_API FBTAnimationBlendOptions
 {
 	GENERATED_USTRUCT_BODY()
@@ -218,4 +237,3 @@ enum class ECloseDialogueCursorOptions : uint8
 	/** Show the mouse cursor */
 	Show,
 };
-

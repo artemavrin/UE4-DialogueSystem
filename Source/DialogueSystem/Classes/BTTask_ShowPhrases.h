@@ -56,6 +56,10 @@ class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode
 	UPROPERTY(EditInstanceOnly, Category = Dialogue)
 	FBTDialogueCameraOptions DialogueCameraOptions;
 
+	/** Dialogue cinematic options */
+	UPROPERTY(EditInstanceOnly, Category = Dialogue)
+	FBTDialogueCinematicOptions DialogueCinematicOptions;
+
 	/** Dialogue character animation options */
 	UPROPERTY(EditInstanceOnly, Category = Dialogue)
 	FBTDialogueCharacterAnimationOptions DialogueCharacterAnimationOptions;
@@ -80,6 +84,7 @@ class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode
 	UWidget* DialogueNameSlot;
 	UAudioComponent* GeneralAudioComponent;
 	UAudioComponent* PhraseAudioComponent;
+	AMatineeActor* MatineeActor;
 
 	int32 CurrentCharNum;
 	TArray<TCHAR> FullString;

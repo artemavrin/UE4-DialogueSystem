@@ -4,6 +4,10 @@
 #include "BTTask_WaitAnswer.h"
 #include "BTComposite_QuestionGroup.h"
 
+#include "UObjectToken.h"
+
+#define LOCTEXT_NAMESPACE "DialogueSystem" 
+
 UBTComposite_QuestionGroup::UBTComposite_QuestionGroup(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	NodeName = "QuestionGroup";
@@ -27,7 +31,14 @@ int32 UBTComposite_QuestionGroup::GetNextChildHandler(FBehaviorTreeSearchData& S
 	}
 	
 	if(!AnswerNode) {
-		//TODO: Log error !
+#if WITH_EDITOR
+		FMessageLog("PIE").Error()
+			->AddToken(FTextToken::Create(LOCTEXT("GetAnswerNode", "Node ")))
+			->AddToken(FUObjectToken::Create(this))
+			->AddToken(FTextToken::Create(LOCTEXT("ErrorTree", " in ")))
+			->AddToken(FUObjectToken::Create((UObject*)SearchData.OwnerComp.GetCurrentTree()))
+			->AddToken(FTextToken::Create(LOCTEXT("QuestionGroupHasNoAnswerNode", "has no Wait Answer node!")));
+#endif
 		return BTSpecialChild::ReturnToParent;
 	}
 
@@ -57,6 +68,7 @@ int32 UBTComposite_QuestionGroup::GetNextChildHandler(FBehaviorTreeSearchData& S
 		}
 		if(!bFound)
 		{
+			// Return to WaitAnswer
 			NextChildIdx = 0;
 		}
 	}
@@ -87,3 +99,5 @@ FName UBTComposite_QuestionGroup::GetNodeIconName() const
 }
 
 #endif
+
+#undef LOCTEXT_NAMESPACE

@@ -19,9 +19,9 @@ class DIALOGUESYSTEM_API UBTTask_CloseDialogue : public UBTTaskNode
 	UPROPERTY(EditInstanceOnly, Category = Widget)
 	FBlackboardKeySelector DialogueWidget;
 
-	/** Hide mouse cursor after dialogue*/
-	UPROPERTY(EditInstanceOnly, Category = Widget)
-	bool bHideCursor;
+	/** Do we show the mouse cursor when the dialogue is closed ? */
+	UPROPERTY(EditInstanceOnly, Category = Mouse)
+	ECloseDialogueCursorOptions MouseOptions;
 
 	/** Player camera*/
 	UPROPERTY(EditInstanceOnly, Category = Camera)

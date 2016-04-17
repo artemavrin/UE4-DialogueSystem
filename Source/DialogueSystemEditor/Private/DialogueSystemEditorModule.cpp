@@ -50,6 +50,7 @@ public:
 		PropertyModule.RegisterCustomPropertyTypeLayout(FQuest::StaticStruct()->GetFName(), FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FQuestBookEditorCustomization::MakeInstance));
 		PropertyModule.RegisterCustomPropertyTypeLayout(FBTDialogueTextPhrase::StaticStruct()->GetFName(), FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FTextPhrasesCustomization::MakeInstance));
 		PropertyModule.RegisterCustomPropertyTypeLayout(FBTDialogueTextOptions::StaticStruct()->GetFName(), FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FTextOptionsCustomization::MakeInstance));
+		PropertyModule.RegisterCustomPropertyTypeLayout(FBTDialogueCinematicOptions::StaticStruct()->GetFName(), FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FCinematicOptionsCustomization::MakeInstance));
 		PropertyModule.RegisterCustomClassLayout(UBTComposite_Question::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FQuestionDetails::MakeInstance));
 
 		QuestBookEditor_ToolBarExtensibilityManager = MakeShareable(new FExtensibilityManager);

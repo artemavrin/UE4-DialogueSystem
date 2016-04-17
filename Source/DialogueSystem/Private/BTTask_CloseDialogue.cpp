@@ -11,11 +11,13 @@
 #include "Camera/CameraComponent.h"
 #include "BTTask_ShowPhrases.h"
 #include "BTTask_WaitAnswer.h"
+#include "UObjectToken.h"
+
+#define LOCTEXT_NAMESPACE "DialogueSystem" 
 
 UBTTask_CloseDialogue::UBTTask_CloseDialogue(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	NodeName = "Close Dialogue";
-	bHideCursor = true;
 }
 
 EBTNodeResult::Type UBTTask_CloseDialogue::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -28,30 +30,34 @@ EBTNodeResult::Type UBTTask_CloseDialogue::ExecuteTask(UBehaviorTreeComponent& O
 		UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
 		UUserWidget* Widget = Cast<UUserWidget>(BlackboardComp->GetValueAsObject(KeyName));
 		UWidgetComponent* WidgetComp = Cast<UWidgetComponent>(BlackboardComp->GetValueAsObject(KeyName));
-		
-		if(!Widget && !WidgetComp)
+
+		if (!Widget && !WidgetComp)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Invalid key for Dialogue Widget !"));
+#if WITH_EDITOR
+			FMessageLog("PIE").Error()
+				->AddToken(FTextToken::Create(LOCTEXT("InvalidWidgetKey", "Invalid key for Dialogue Widget in ")))
+				->AddToken(FUObjectToken::Create((UObject*)OwnerComp.GetCurrentTree()));
+#endif
 			return EBTNodeResult::Failed;
 		}
-		
+
 		if (!Widget && WidgetComp)
 		{
 			Widget = CreateWidget<UUserWidget>(GetWorld(), WidgetComp->GetWidgetClass());
 		}
-		
+
 		APlayerController* PlayerController = Widget->GetOwningPlayer();
 		FInputModeGameOnly InputMode;
 		PlayerController->SetInputMode(InputMode);
-		
+
 		if (Widget && Widget->IsInViewport())
 		{
 			Widget->RemoveFromParent();
 		}
 
-		switch(MouseOptions)
+		switch (MouseOptions)
 		{
-		case ECloseDialogueCursorOptions::Show :
+		case ECloseDialogueCursorOptions::Show:
 			PlayerController->bShowMouseCursor = true;
 			break;
 		default:
@@ -98,6 +104,6 @@ FName UBTTask_CloseDialogue::GetNodeIconName() const
 	return FName("GraphBreadcrumb.BrowseBack");
 }
 
-
-
 #endif	// WITH_EDITOR
+
+#undef LOCTEXT_NAMESPACE

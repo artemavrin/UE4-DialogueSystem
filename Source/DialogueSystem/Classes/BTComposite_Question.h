@@ -44,4 +44,9 @@ class DIALOGUESYSTEM_API UBTComposite_Question : public UBTCompositeNode
 #if WITH_EDITOR
 	virtual FName GetNodeIconName() const override;
 #endif
+
+	/** Set by WaitAnswer, and checked by QuestionGroup; true if visible & decorators agree. */
+	bool bCanExecute;
+	/** Set by WaitAnswer, tested by QuestionGroup. */
+	bool bSelected;
 };

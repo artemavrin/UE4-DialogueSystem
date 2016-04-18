@@ -1,4 +1,4 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 
 #include "DialogueSystemPrivatePCH.h"
 

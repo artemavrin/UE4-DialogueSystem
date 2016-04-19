@@ -119,7 +119,7 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 						{
 							ShowingNumPhrase = 0;
 						}
-						FText StartPhrase = DialogueTextOptions.Phrases.Num() > 0 ? DialogueTextOptions.Phrases[ShowingNumPhrase].Phrase : FText::GetEmpty();
+						FText StartPhrase = DialogueTextOptions.Phrases.Num() > 0 ? DialogueTextOptions.Phrases[ShowingNumPhrase].GetFormatedPhrase(BlackboardComp) : FText::GetEmpty();
 						if (DialogueTextOptions.TextEffect == ETextEffect::NoEffect || DialogueTextOptions.Delay == 0.0f)
 						{
 							StartPhraseTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ShowPhraseText", "{0}"), StartPhrase));
@@ -315,7 +315,7 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 {
 	if (bSkip && DialogueTextOptions.TextEffect == ETextEffect::Typewriter && !bShowingFullPhrase)
 	{
-		FText StartPhrase = DialogueTextOptions.Phrases[ShowingNumPhrase].Phrase;
+		FText StartPhrase = DialogueTextOptions.Phrases[ShowingNumPhrase].GetFormatedPhrase(BlackboardComp);
 		UTextBlock* StartPhraseTextBlock = Cast<UTextBlock>(DialoguePhraseSlot);
 		if (StartPhraseTextBlock)
 		{
@@ -335,7 +335,7 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 	if (ShowingNumPhrase <= PhrasesCount)
 	{
 		bTextFinished = false;
-		FText StartPhrase = DialogueTextOptions.Phrases[ShowingNumPhrase].Phrase;
+		FText StartPhrase = DialogueTextOptions.Phrases[ShowingNumPhrase].GetFormatedPhrase(BlackboardComp);
 		UTextBlock* StartPhraseTextBlock = Cast<UTextBlock>(DialoguePhraseSlot);
 
 		if (DialogueTextOptions.TextEffect == ETextEffect::Typewriter && DialogueTextOptions.Delay > 0)

@@ -32,6 +32,7 @@ void FTextPhrasesCustomization::CustomizeHeader(TSharedRef<class IPropertyHandle
 void FTextPhrasesCustomization::CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	Phrase = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextPhrase, Phrase));
+	DialogueParameters = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextPhrase, DialogueParameters));
 	SoundToPlay = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextPhrase, SoundToPlay));
 	ShowingTime = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextPhrase, ShowingTime));
 
@@ -45,6 +46,8 @@ void FTextPhrasesCustomization::CustomizeChildren(TSharedRef<class IPropertyHand
 		[
 			Phrase->CreatePropertyValueWidget()
 		];
+
+	ChildBuilder.AddChildProperty(DialogueParameters.ToSharedRef());
 
 	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextPhrase, SoundToPlay)).ToSharedRef());
 	ChildBuilder.AddChildContent(LOCTEXT("ShowingTime", "ShowingTime"))

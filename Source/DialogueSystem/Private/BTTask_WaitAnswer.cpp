@@ -146,7 +146,7 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 									NewSampleButton->IsFocusable = false;
 								}
 
-								NewSampleTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ButtonText", "{0}"), Question->QuestionThumbnail));
+								NewSampleTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ButtonText", "{0}"), Question->GetQuestionThumbnail(BlackboardComp)));
 								UWidget* Oldtext = NewSampleButton->GetChildAt(0);
 								NewSampleButton->WaitTask = this;
 								NewSampleButton->RemoveChild(Oldtext);
@@ -337,7 +337,9 @@ void UBTTask_WaitAnswer::SetAnswer(FText Text)
 	{
 		UBTComposite_Question* Question = Cast<UBTComposite_Question>(Child.ChildComposite);
 		if(Question) {
-			if(Question->QuestionThumbnail.ToString() == SelectedAnswer.ToString())
+
+			FText FormatedQuestion = Question->GetQuestionThumbnail(BlackboardComp);
+			if(FormatedQuestion.EqualTo(SelectedAnswer))
 			{
 				Question->bSelected = true;
 				break;

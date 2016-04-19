@@ -17,6 +17,7 @@ public:
 private:
 	/** Property handles of the properties we're editing */
 	TSharedPtr<IPropertyHandle> Phrase;
+	TSharedPtr<IPropertyHandle> DialogueParameters;
 	TSharedPtr<IPropertyHandle> SoundToPlay;
 	TSharedPtr<IPropertyHandle> ShowingTime;
 };

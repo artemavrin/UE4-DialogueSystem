@@ -2,8 +2,38 @@
 
 #pragma once
 #include "Runtime/AIModule/Classes/BehaviorTree/BehaviorTreeTypes.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/Texture2D.h"
 #include "BTDialogueTypes.generated.h"
+
+/**
+* Dialogue Argument Struct
+*/
+USTRUCT()
+struct DIALOGUESYSTEM_API FBTDialogueParameter
+{
+
+	GENERATED_USTRUCT_BODY()
+
+public:
+
+	UPROPERTY(EditInstanceOnly, Category = DialogueParameter) FString StringKey;
+	UPROPERTY(EditInstanceOnly, Category = DialogueParameter) FBlackboardKeySelector BlackboardKey;
+
+public:
+
+	void PushArgument(FFormatNamedArguments& DialogueArguments, UBlackboardComponent * Blackboard) const
+	{
+
+		if (Blackboard)
+		{
+			FString TextValue = Blackboard->GetValueAsString(BlackboardKey.SelectedKeyName);
+			DialogueArguments.Add(StringKey, FText::FromString(TextValue));
+		}
+
+	}
+
+};
 
 UENUM()
 enum class ETextEffect : uint8
@@ -24,6 +54,9 @@ struct DIALOGUESYSTEM_API FBTDialogueTextPhrase
 	UPROPERTY(EditInstanceOnly, meta = (MultiLine = true), Category = Text)
 	FText Phrase;
 
+	UPROPERTY(EditInstanceOnly, Category = Text)
+	TArray<FBTDialogueParameter> DialogueParameters;
+
 	/** CUE to play */
 	UPROPERTY(EditInstanceOnly, Category = Sound)
 	USoundCue* SoundToPlay;
@@ -31,6 +64,20 @@ struct DIALOGUESYSTEM_API FBTDialogueTextPhrase
 	/** How long to show the phrase */
 	UPROPERTY(EditInstanceOnly, meta = (UIMin = 0, ClampMin = 0), Category = Text)
 	float ShowingTime;
+
+public:
+
+	FText GetFormatedPhrase(UBlackboardComponent * Blackboard) const
+	{
+
+		FFormatNamedArguments DialogueArguments;
+
+		for (const FBTDialogueParameter& DialogueParameter : DialogueParameters)
+			DialogueParameter.PushArgument(DialogueArguments, Blackboard);
+
+		return FText::Format(Phrase, DialogueArguments);
+
+	}
 
 };
 

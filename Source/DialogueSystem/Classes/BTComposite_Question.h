@@ -20,6 +20,10 @@ class DIALOGUESYSTEM_API UBTComposite_Question : public UBTCompositeNode
 	/** Question Thumbnail */
 	UPROPERTY(EditInstanceOnly, Category = Question, meta = (MultiLine = "true"))
 	FText QuestionThumbnail;
+
+	/** Question Parameters */
+	UPROPERTY(EditInstanceOnly, Category = Question)
+	TArray<FBTDialogueParameter> DialogueParameters;
 	
 	/** Question visibility */
 	UPROPERTY(EditInstanceOnly, Category = QuestionVisibility)
@@ -40,6 +44,8 @@ class DIALOGUESYSTEM_API UBTComposite_Question : public UBTCompositeNode
 	bool GetVisibility(APlayerController* PlayerController);
 
 	void SetVisibility(APlayerController* PlayerController, bool NewVisibility) const;
+
+	FText GetQuestionThumbnail(UBlackboardComponent * Blackboard) const;
 
 #if WITH_EDITOR
 	virtual FName GetNodeIconName() const override;

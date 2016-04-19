@@ -55,6 +55,10 @@ struct DIALOGUESYSTEM_API FBTDialogueTextOptions
 	UPROPERTY(EditInstanceOnly, Category = General)
 	bool UseGeneralTime;
 
+	/** Enable to show just one random phrase */
+	UPROPERTY(EditInstanceOnly, Category = General)
+	bool bShowRandomPhrase;
+
 	/** Name of TextBlock where will be show phrases */
 	UPROPERTY(EditInstanceOnly, Category = Widget)
 	FName DialoguePhraseSlotName;

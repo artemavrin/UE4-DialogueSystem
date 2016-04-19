@@ -115,6 +115,7 @@ void FTextOptionsCustomization::CustomizeChildren(TSharedRef<class IPropertyHand
 	bHideLastPhrase = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bHideLastPhrase));
 	GeneralShowingTime = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, GeneralShowingTime));
 	UseGeneralTime = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, UseGeneralTime));
+	bShowRandomPhrase = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bShowRandomPhrase));
 	DialoguePhraseSlotName = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, DialoguePhraseSlotName));
 	DialogueQuestionsSlotName = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, DialogueQuestionsSlotName));
 	Phrases = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, Phrases));
@@ -125,6 +126,7 @@ void FTextOptionsCustomization::CustomizeChildren(TSharedRef<class IPropertyHand
 	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bHideLastPhrase)).ToSharedRef());
 	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, GeneralShowingTime)).ToSharedRef());
 	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, UseGeneralTime)).ToSharedRef());
+	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bShowRandomPhrase)).ToSharedRef());
 	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, DialoguePhraseSlotName)).ToSharedRef());
 	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, DialogueQuestionsSlotName)).ToSharedRef());
 	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, Phrases)).ToSharedRef());

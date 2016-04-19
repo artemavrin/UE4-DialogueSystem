@@ -37,6 +37,7 @@ private:
 	TSharedPtr<IPropertyHandle> bHideLastPhrase;
 	TSharedPtr<IPropertyHandle> GeneralShowingTime;
 	TSharedPtr<IPropertyHandle> UseGeneralTime;
+	TSharedPtr<IPropertyHandle> bShowRandomPhrase;
 	TSharedPtr<IPropertyHandle> DialoguePhraseSlotName;
 	TSharedPtr<IPropertyHandle> DialogueQuestionsSlotName;
 	TSharedPtr<IPropertyHandle> Phrases;

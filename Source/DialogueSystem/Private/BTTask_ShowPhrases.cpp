@@ -276,7 +276,7 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 			}
 			// Event Listener
 
-			UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueListener"));
+			UWidget* DialogueEventListener = GetEventListener(WidgetTree);
 			if (DialogueEventListener != nullptr)
 			{
 				UDialogueEventListener* EventListener = Cast<UDialogueEventListener>(DialogueEventListener);
@@ -468,7 +468,7 @@ void UBTTask_ShowPhrases::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		bTextFinished = false;
 		ShowingNumPhrase = 0;
 		UWidgetTree* WidgetTree = Widget->WidgetTree;
-		UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueEventListener"));
+		UWidget* DialogueEventListener = GetEventListener(WidgetTree);
 		if (DialogueEventListener != nullptr)
 		{
 			UDialogueEventListener* EventListener = Cast<UDialogueEventListener>(DialogueEventListener);
@@ -479,6 +479,20 @@ void UBTTask_ShowPhrases::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		}
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
+}
+
+UWidget* UBTTask_ShowPhrases::GetEventListener(UWidgetTree* WidgetTree)
+{
+	UWidget* FoundWidget = nullptr;
+
+	WidgetTree->ForEachWidget([&](UWidget* Widget){
+		if (UDialogueEventListener* EventListener = Cast<UDialogueEventListener>(Widget))
+		{
+			FoundWidget = Widget;
+		}
+	});
+
+	return FoundWidget;
 }
 
 void UBTTask_ShowPhrases::SaveDefaultCameraDataForAll(UBTNode* Node)

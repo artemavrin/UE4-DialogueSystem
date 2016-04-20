@@ -25,6 +25,7 @@ class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode, public IBTCon
 	
 	void ShowNewDialoguePhrase(bool bSkip);
 	void ShowNewChar();
+	UWidget* GetEventListener(UWidgetTree* WidgetTree);
 	void SaveDefaultCameraDataForAll(UBTNode* Node);
 	void SaveDefaultCameraData(UCameraComponent* PlayerCamera);
 
@@ -112,4 +113,5 @@ protected:
 
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
+	
 };

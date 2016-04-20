@@ -17,7 +17,6 @@ public:
 private:
 	/** Property handles of the properties we're editing */
 	TSharedPtr<IPropertyHandle> Phrase;
-	TSharedPtr<IPropertyHandle> DialogueParameters;
 	TSharedPtr<IPropertyHandle> SoundToPlay;
 	TSharedPtr<IPropertyHandle> ShowingTime;
 };
@@ -38,6 +37,7 @@ private:
 	TSharedPtr<IPropertyHandle> bHideLastPhrase;
 	TSharedPtr<IPropertyHandle> GeneralShowingTime;
 	TSharedPtr<IPropertyHandle> UseGeneralTime;
+	TSharedPtr<IPropertyHandle> bShowRandomPhrase;
 	TSharedPtr<IPropertyHandle> DialoguePhraseSlotName;
 	TSharedPtr<IPropertyHandle> DialogueQuestionsSlotName;
 	TSharedPtr<IPropertyHandle> Phrases;

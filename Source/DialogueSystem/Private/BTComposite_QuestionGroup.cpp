@@ -17,7 +17,7 @@ UBTComposite_QuestionGroup::UBTComposite_QuestionGroup(const FObjectInitializer&
 
 int32 UBTComposite_QuestionGroup::GetNextChildHandler(FBehaviorTreeSearchData& SearchData, int32 PrevChild, EBTNodeResult::Type LastResult) const
 {
-	int32 NextChildIdx;
+	int32 NextChildIdx = 0;
 	UBTTask_WaitAnswer* AnswerNode = nullptr;
 	
 	for (auto& Child : Children)

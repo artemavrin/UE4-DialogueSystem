@@ -157,7 +157,7 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 					}
 				}
 				// Event Listener
-				UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueEventListener"));
+				UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueListener"));
 				if (DialogueEventListener != nullptr)
 				{
 					UDialogueEventListener* EventListener = Cast<UDialogueEventListener>(DialogueEventListener);

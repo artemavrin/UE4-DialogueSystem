@@ -54,9 +54,6 @@ struct DIALOGUESYSTEM_API FBTDialogueTextPhrase
 	UPROPERTY(EditInstanceOnly, meta = (MultiLine = true), Category = Text)
 	FText Phrase;
 
-	UPROPERTY(EditInstanceOnly, Category = Text)
-	TArray<FBTDialogueParameter> DialogueParameters;
-
 	/** CUE to play */
 	UPROPERTY(EditInstanceOnly, Category = Sound)
 	USoundCue* SoundToPlay;
@@ -64,20 +61,6 @@ struct DIALOGUESYSTEM_API FBTDialogueTextPhrase
 	/** How long to show the phrase */
 	UPROPERTY(EditInstanceOnly, meta = (UIMin = 0, ClampMin = 0), Category = Text)
 	float ShowingTime;
-
-public:
-
-	FText GetFormatedPhrase(UBlackboardComponent * Blackboard) const
-	{
-
-		FFormatNamedArguments DialogueArguments;
-
-		for (const FBTDialogueParameter& DialogueParameter : DialogueParameters)
-			DialogueParameter.PushArgument(DialogueArguments, Blackboard);
-
-		return FText::Format(Phrase, DialogueArguments);
-
-	}
 
 };
 
@@ -101,6 +84,10 @@ struct DIALOGUESYSTEM_API FBTDialogueTextOptions
 	/** Enable to use general time for all phrases */
 	UPROPERTY(EditInstanceOnly, Category = General)
 	bool UseGeneralTime;
+
+	/** Enable to show just one random phrase */
+	UPROPERTY(EditInstanceOnly, Category = General)
+	bool bShowRandomPhrase;
 
 	/** Name of TextBlock where will be show phrases */
 	UPROPERTY(EditInstanceOnly, Category = Widget)

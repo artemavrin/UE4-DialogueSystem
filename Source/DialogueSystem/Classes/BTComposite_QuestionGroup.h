@@ -22,4 +22,5 @@ private:
 #if WITH_EDITOR
 	virtual FName GetNodeIconName() const override;
 #endif
+
 };

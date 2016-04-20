@@ -65,9 +65,7 @@ FText UBTComposite_Question::GetQuestionThumbnail(UBlackboardComponent * Blackbo
 {
 
 	FFormatNamedArguments DialogueArguments;
-
-	for (const FBTDialogueParameter& DialogueParameter : DialogueParameters)
-		DialogueParameter.PushArgument(DialogueArguments, Blackboard);
+	GetPhrasesContext(this, DialogueArguments, Blackboard);
 
 	return FText::Format(QuestionThumbnail, DialogueArguments);
 

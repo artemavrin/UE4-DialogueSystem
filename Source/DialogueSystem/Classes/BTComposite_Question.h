@@ -3,14 +3,14 @@
 
 #include "BehaviorTree/BTCompositeNode.h"
 #include "DialogueSettings.h"
-#include "BTDialogueTypes.h"
+#include "BTContextNode_Interface.h"
 #include "BTComposite_Question.generated.h"
 
 /**
 * Question composite node.
 */
 UCLASS()
-class DIALOGUESYSTEM_API UBTComposite_Question : public UBTCompositeNode
+class DIALOGUESYSTEM_API UBTComposite_Question : public UBTCompositeNode, public IBTContextNode_Interface
 {
 	GENERATED_UCLASS_BODY()
 
@@ -20,10 +20,6 @@ class DIALOGUESYSTEM_API UBTComposite_Question : public UBTCompositeNode
 	/** Question Thumbnail */
 	UPROPERTY(EditInstanceOnly, Category = Question, meta = (MultiLine = "true"))
 	FText QuestionThumbnail;
-
-	/** Question Parameters */
-	UPROPERTY(EditInstanceOnly, Category = Question)
-	TArray<FBTDialogueParameter> DialogueParameters;
 	
 	/** Question visibility */
 	UPROPERTY(EditInstanceOnly, Category = QuestionVisibility)

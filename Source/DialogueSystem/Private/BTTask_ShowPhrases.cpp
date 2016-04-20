@@ -119,7 +119,15 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 						{
 							ShowingNumPhrase = 0;
 						}
-						FText StartPhrase = DialogueTextOptions.Phrases.Num() > 0 ? DialogueTextOptions.Phrases[ShowingNumPhrase].GetFormatedPhrase(BlackboardComp) : FText::GetEmpty();
+
+						// random phrase
+						if (DialogueTextOptions.bShowRandomPhrase && PhrasesCount > 0)
+						{
+							ShowingNumPhrase = FMath::RandRange(0, PhrasesCount);
+						}
+
+						FText StartPhrase = GetCurrentPhrase();
+
 						if (DialogueTextOptions.TextEffect == ETextEffect::NoEffect || DialogueTextOptions.Delay == 0.0f)
 						{
 							StartPhraseTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ShowPhraseText", "{0}"), StartPhrase));
@@ -268,7 +276,7 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 			}
 			// Event Listener
 
-			UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueEventListener"));
+			UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueListener"));
 			if (DialogueEventListener != nullptr)
 			{
 				UDialogueEventListener* EventListener = Cast<UDialogueEventListener>(DialogueEventListener);
@@ -315,14 +323,12 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 {
 	if (bSkip && DialogueTextOptions.TextEffect == ETextEffect::Typewriter && !bShowingFullPhrase)
 	{
-		FText StartPhrase = DialogueTextOptions.Phrases[ShowingNumPhrase].GetFormatedPhrase(BlackboardComp);
+		FText StartPhrase = GetCurrentPhrase();
 		UTextBlock* StartPhraseTextBlock = Cast<UTextBlock>(DialoguePhraseSlot);
 		if (StartPhraseTextBlock)
 		{
 			// first show hole phrase 
-			UE_LOG(LogTemp, Warning, TEXT("#1"));
 			StartPhraseTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ShowPhraseText", "{0}"), StartPhrase));
-			UE_LOG(LogTemp, Warning, TEXT("#1.1"));
 			OwnerActor->GetWorldTimerManager().ClearTimer(TimerHandle);
 			TimerDelegate = FTimerDelegate::CreateUObject(this, &UBTTask_ShowPhrases::ShowNewDialoguePhrase, false);
 			float ShowingTime = DialogueTextOptions.UseGeneralTime ? DialogueTextOptions.GeneralShowingTime : DialogueTextOptions.Phrases[ShowingNumPhrase].ShowingTime;
@@ -332,10 +338,10 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 		return;
 	}
 	ShowingNumPhrase++;
-	if (ShowingNumPhrase <= PhrasesCount)
+	if (ShowingNumPhrase <= PhrasesCount && !DialogueTextOptions.bShowRandomPhrase)
 	{
 		bTextFinished = false;
-		FText StartPhrase = DialogueTextOptions.Phrases[ShowingNumPhrase].GetFormatedPhrase(BlackboardComp);
+		FText StartPhrase = GetCurrentPhrase();
 		UTextBlock* StartPhraseTextBlock = Cast<UTextBlock>(DialoguePhraseSlot);
 
 		if (DialogueTextOptions.TextEffect == ETextEffect::Typewriter && DialogueTextOptions.Delay > 0)
@@ -346,9 +352,7 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 			StringToDisplay.AppendChar(FullString[0]);
 			if (StartPhraseTextBlock)
 			{
-			UE_LOG(LogTemp, Warning, TEXT("#2"));
 				StartPhraseTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ShowPhraseText", "{0}"), FText::FromString(StringToDisplay)));
-			UE_LOG(LogTemp, Warning, TEXT("#2.2"));
 			}
 			TimerDelegate = FTimerDelegate::CreateUObject(this, &UBTTask_ShowPhrases::ShowNewChar);
 			OwnerActor->GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, DialogueTextOptions.Delay, false);
@@ -357,9 +361,7 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 		{
 			if (StartPhraseTextBlock)
 			{
-			UE_LOG(LogTemp, Warning, TEXT("#3"));
 				StartPhraseTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ShowPhraseText", "{0}"), StartPhrase));
-			UE_LOG(LogTemp, Warning, TEXT("#3.3"));
 			}
 			float ShowingTime = DialogueTextOptions.UseGeneralTime ? DialogueTextOptions.GeneralShowingTime : DialogueTextOptions.Phrases[ShowingNumPhrase].ShowingTime;
 			OwnerActor->GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, ShowingTime, false);
@@ -522,6 +524,21 @@ void UBTTask_ShowPhrases::SaveDefaultCameraData(UCameraComponent* Camera)
 	}
 }
 
+FText UBTTask_ShowPhrases::GetCurrentPhrase()
+{
+
+	if (DialogueTextOptions.Phrases.IsValidIndex(ShowingNumPhrase))
+	{
+		FFormatNamedArguments DialogueArguments;
+		GetPhrasesContext(this, DialogueArguments, BlackboardComp);
+
+		return FText::Format(DialogueTextOptions.Phrases[ShowingNumPhrase].Phrase, DialogueArguments);
+	}
+
+	return FText::GetEmpty();
+
+}
+
 FString UBTTask_ShowPhrases::GetStaticDescription() const
 {
 	FString StringPhrases;
@@ -529,6 +546,10 @@ FString UBTTask_ShowPhrases::GetStaticDescription() const
 		DialogueSoundOptions.bPlaySound && DialogueSoundOptions.SoundToPlay ? *DialogueSoundOptions.SoundToPlay->GetName() : TEXT("none"));
 	if (DialogueTextOptions.Phrases.Num() > 0)
 	{
+		if (DialogueTextOptions.bShowRandomPhrase)
+		{
+			StringPhrases += TEXT("\nRandom:");
+		}
 		for (int32 i = 0; i < DialogueTextOptions.Phrases.Num(); i++)
 		{
 			if (StringPhrases == TEXT(""))
@@ -549,8 +570,9 @@ FString UBTTask_ShowPhrases::GetStaticDescription() const
 
 	if (!bShowPropertyDetails)
 	{
-		StringPhrases = FString::Printf(TEXT("Sound: %s \nPhrases: %i"),
+		StringPhrases = FString::Printf(TEXT("Sound: %s \n%sPhrases: %i"),
 			DialogueSoundOptions.bPlaySound && DialogueSoundOptions.SoundToPlay ? *DialogueSoundOptions.SoundToPlay->GetName() : TEXT("none"),
+			DialogueTextOptions.bShowRandomPhrase ? TEXT("Random ") : TEXT(""),
 			DialogueTextOptions.Phrases.Num());
 	}
 

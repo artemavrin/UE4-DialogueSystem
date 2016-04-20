@@ -3,7 +3,7 @@
 #pragma once
 #include "BehaviorTree/BTTaskNode.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
-#include "BTDialogueTypes.h"
+#include "BTContextNode_Interface.h"
 #include "Widget.h"
 #include "WidgetComponent.h"
 #include "UserWidget.h"
@@ -16,7 +16,7 @@
 * Show dialogue task node.
 */
 UCLASS()
-class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode
+class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode, public IBTContextNode_Interface
 {
 	GENERATED_UCLASS_BODY()
 
@@ -27,6 +27,8 @@ class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode
 	void ShowNewChar();
 	void SaveDefaultCameraDataForAll(UBTNode* Node);
 	void SaveDefaultCameraData(UCameraComponent* PlayerCamera);
+
+	FText GetCurrentPhrase();
 
 	/** Dialogue widget */
 	UPROPERTY(EditInstanceOnly, Category = Widget)

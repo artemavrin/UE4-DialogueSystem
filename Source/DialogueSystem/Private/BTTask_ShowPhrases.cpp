@@ -119,12 +119,15 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 						{
 							ShowingNumPhrase = 0;
 						}
+
 						// random phrase
 						if (DialogueTextOptions.bShowRandomPhrase && PhrasesCount > 0)
 						{
 							ShowingNumPhrase = FMath::RandRange(0, PhrasesCount);
 						}
-						FText StartPhrase = PhrasesCount >= 0 ? DialogueTextOptions.Phrases[ShowingNumPhrase].Phrase : FText::GetEmpty();
+
+						FText StartPhrase = GetCurrentPhrase();
+
 						if (DialogueTextOptions.TextEffect == ETextEffect::NoEffect || DialogueTextOptions.Delay == 0.0f)
 						{
 							StartPhraseTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ShowPhraseText", "{0}"), StartPhrase));
@@ -273,7 +276,7 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 			}
 			// Event Listener
 
-			UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueEventListener"));
+			UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueListener"));
 			if (DialogueEventListener != nullptr)
 			{
 				UDialogueEventListener* EventListener = Cast<UDialogueEventListener>(DialogueEventListener);
@@ -320,7 +323,7 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 {
 	if (bSkip && DialogueTextOptions.TextEffect == ETextEffect::Typewriter && !bShowingFullPhrase)
 	{
-		FText StartPhrase = DialogueTextOptions.Phrases[ShowingNumPhrase].Phrase;
+		FText StartPhrase = GetCurrentPhrase();
 		UTextBlock* StartPhraseTextBlock = Cast<UTextBlock>(DialoguePhraseSlot);
 		if (StartPhraseTextBlock)
 		{
@@ -338,7 +341,7 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 	if (ShowingNumPhrase <= PhrasesCount && !DialogueTextOptions.bShowRandomPhrase)
 	{
 		bTextFinished = false;
-		FText StartPhrase = DialogueTextOptions.Phrases[ShowingNumPhrase].Phrase;
+		FText StartPhrase = GetCurrentPhrase();
 		UTextBlock* StartPhraseTextBlock = Cast<UTextBlock>(DialoguePhraseSlot);
 
 		if (DialogueTextOptions.TextEffect == ETextEffect::Typewriter && DialogueTextOptions.Delay > 0)
@@ -519,6 +522,21 @@ void UBTTask_ShowPhrases::SaveDefaultCameraData(UCameraComponent* Camera)
 		UBTCompositeNode* Parent = GetParentNode();
 		SaveDefaultCameraDataForAll(Parent);
 	}
+}
+
+FText UBTTask_ShowPhrases::GetCurrentPhrase()
+{
+
+	if (DialogueTextOptions.Phrases.IsValidIndex(ShowingNumPhrase))
+	{
+		FFormatNamedArguments DialogueArguments;
+		GetPhrasesContext(this, DialogueArguments, BlackboardComp);
+
+		return FText::Format(DialogueTextOptions.Phrases[ShowingNumPhrase].Phrase, DialogueArguments);
+	}
+
+	return FText::GetEmpty();
+
 }
 
 FString UBTTask_ShowPhrases::GetStaticDescription() const

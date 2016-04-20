@@ -61,6 +61,16 @@ void UBTComposite_Question::SetVisibility(APlayerController* PlayerController, b
 	}
 }
 
+FText UBTComposite_Question::GetQuestionThumbnail(UBlackboardComponent * Blackboard) const
+{
+
+	FFormatNamedArguments DialogueArguments;
+	GetPhrasesContext(this, DialogueArguments, Blackboard);
+
+	return FText::Format(QuestionThumbnail, DialogueArguments);
+
+}
+
 #if WITH_EDITOR
 
 FName UBTComposite_Question::GetNodeIconName() const

@@ -2,8 +2,38 @@
 
 #pragma once
 #include "Runtime/AIModule/Classes/BehaviorTree/BehaviorTreeTypes.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/Texture2D.h"
 #include "BTDialogueTypes.generated.h"
+
+/**
+* Dialogue Argument Struct
+*/
+USTRUCT()
+struct DIALOGUESYSTEM_API FBTDialogueParameter
+{
+
+	GENERATED_USTRUCT_BODY()
+
+public:
+
+	UPROPERTY(EditInstanceOnly, Category = DialogueParameter) FString StringKey;
+	UPROPERTY(EditInstanceOnly, Category = DialogueParameter) FBlackboardKeySelector BlackboardKey;
+
+public:
+
+	void PushArgument(FFormatNamedArguments& DialogueArguments, UBlackboardComponent * Blackboard) const
+	{
+
+		if (Blackboard)
+		{
+			FString TextValue = Blackboard->GetValueAsString(BlackboardKey.SelectedKeyName);
+			DialogueArguments.Add(StringKey, FText::FromString(TextValue));
+		}
+
+	}
+
+};
 
 UENUM()
 enum class ETextEffect : uint8

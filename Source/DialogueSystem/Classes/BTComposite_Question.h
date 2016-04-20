@@ -3,14 +3,14 @@
 
 #include "BehaviorTree/BTCompositeNode.h"
 #include "DialogueSettings.h"
-#include "BTDialogueTypes.h"
+#include "BTContextNode_Interface.h"
 #include "BTComposite_Question.generated.h"
 
 /**
 * Question composite node.
 */
 UCLASS()
-class DIALOGUESYSTEM_API UBTComposite_Question : public UBTCompositeNode
+class DIALOGUESYSTEM_API UBTComposite_Question : public UBTCompositeNode, public IBTContextNode_Interface
 {
 	GENERATED_UCLASS_BODY()
 
@@ -40,6 +40,8 @@ class DIALOGUESYSTEM_API UBTComposite_Question : public UBTCompositeNode
 	bool GetVisibility(APlayerController* PlayerController);
 
 	void SetVisibility(APlayerController* PlayerController, bool NewVisibility) const;
+
+	FText GetQuestionThumbnail(UBlackboardComponent * Blackboard) const;
 
 #if WITH_EDITOR
 	virtual FName GetNodeIconName() const override;

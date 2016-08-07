@@ -19,7 +19,8 @@ public class DialogueSystem : ModuleRules
                 "UMG",
                 "SlateCore",
                 "Slate",
-                "AIModule"
+                "AIModule",
+                "GameplayTasks"
 			}
 		);
 	}

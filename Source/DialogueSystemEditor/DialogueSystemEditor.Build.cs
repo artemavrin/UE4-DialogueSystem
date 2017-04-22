@@ -25,7 +25,6 @@ public class DialogueSystemEditor : ModuleRules
                 "PropertyEditor",
                 "EditorStyle",
                 "InputCore",
-                "HTTP",
                 "DialogueSystem"
 			}
 		);

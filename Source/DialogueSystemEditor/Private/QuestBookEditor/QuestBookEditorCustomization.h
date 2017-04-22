@@ -2,7 +2,9 @@
 
 #pragma once
 
-#include "Editor/DetailCustomizations/Private/DetailCustomizationsPrivatePCH.h"
+#include "IPropertyTypeCustomization.h"
+
+class IPropertyHandle;
 
 class FQuestBookEditorCustomization : public IPropertyTypeCustomization
 {

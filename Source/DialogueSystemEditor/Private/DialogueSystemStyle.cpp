@@ -59,7 +59,7 @@ void FDialogueSystemStyle::Initialize()
 	}
 
 	FSlateStyleRegistry::RegisterSlateStyle(*StyleSet.Get());
-	FClassIconFinder::RegisterIconSource(StyleSet.Get());
+	//FClassIconFinder::RegisterIconSource(StyleSet.Get());
 };
 
 #undef IMAGE_PLUGIN_BRUSH
@@ -73,7 +73,7 @@ void FDialogueSystemStyle::Shutdown()
 	if (StyleSet.IsValid())
 	{
 		FSlateStyleRegistry::UnRegisterSlateStyle(*StyleSet.Get());
-		FClassIconFinder::UnregisterIconSource(StyleSet.Get());
+		//FClassIconFinder::UnregisterIconSource(StyleSet.Get());
 		ensure(StyleSet.IsUnique());
 		StyleSet.Reset();
 	}

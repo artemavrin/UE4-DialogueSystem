@@ -485,10 +485,10 @@ UWidget* UBTTask_ShowPhrases::GetEventListener(UWidgetTree* WidgetTree)
 {
 	UWidget* FoundWidget = nullptr;
 
-	WidgetTree->ForEachWidget([&](UWidget* Widget){
-		if (UDialogueEventListener* EventListener = Cast<UDialogueEventListener>(Widget))
+	WidgetTree->ForEachWidget([&](UWidget* LoopWidget){
+		if (UDialogueEventListener* EventListener = Cast<UDialogueEventListener>(LoopWidget))
 		{
-			FoundWidget = Widget;
+			FoundWidget = LoopWidget;
 		}
 	});
 

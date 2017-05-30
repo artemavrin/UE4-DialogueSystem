@@ -4,7 +4,7 @@ using UnrealBuildTool;
 
 public class DialogueSystemEditor : ModuleRules
 {
-    public DialogueSystemEditor(TargetInfo Target)
+    public DialogueSystemEditor(ReadOnlyTargetRules Target) : base (Target)
 	{
 
 		PrivateIncludePaths.AddRange(

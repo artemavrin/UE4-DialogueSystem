@@ -4,7 +4,7 @@ using UnrealBuildTool;
 
 public class DialogueSystem : ModuleRules
 {
-	public DialogueSystem(TargetInfo Target)
+	public DialogueSystem(ReadOnlyTargetRules Target) : base (Target)
 	{
 
 		PrivateIncludePaths.AddRange(
@@ -19,7 +19,7 @@ public class DialogueSystem : ModuleRules
                 "UMG",
                 "SlateCore",
                 "Slate",
-                "AIModule",
+								"AIModule",
                 "GameplayTasks"
 			}
 		);

@@ -1,9 +1,11 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 #pragma once
 
-#include "Editor/DetailCustomizations/Private/DetailCustomizationsPrivatePCH.h"
+#include "IDetailCustomization.h"
 
-#pragma once
+class IDetailLayoutBuilder;
+class IPropertyHandle;
+class SWidget;
 
 class FQuestionDetails : public IDetailCustomization
 {

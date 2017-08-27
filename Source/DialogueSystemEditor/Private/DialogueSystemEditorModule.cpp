@@ -1,4 +1,4 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 
 #include "DialogueSystemEditorPrivatePCH.h"
 
@@ -10,9 +10,6 @@
 #include "BehaviorTreeEditor/QuestionCustomization.h"
 #include "BehaviorTreeEditor/ShowPhrasesCustomization.h"
 
-#include "SNotificationList.h"
-#include "NotificationManager.h"
-#include "Developer/SimplygonSwarm/Public/SimplygonRESTClient.h"
 
 #define LOCTEXT_NAMESPACE "DialogueSystem"
 
@@ -61,9 +58,6 @@ public:
 
 		RegisterAssetTypeAction(AssetTools, MakeShareable(new FQuestBookAssetTypeActions(DialogueSystemAssetCategoryBit)));
 
-		// register notifications
-		RegisterNotifications();
-
 	};
 	virtual void ShutdownModule() override
 	{
@@ -81,57 +75,6 @@ private:
 	{
 		AssetTools.RegisterAssetTypeActions(Action);
 		CreatedAssetTypeActions.Add(Action);
-	}
-
-	void RegisterNotifications()
-	{
-		TSharedRef<IHttpRequest> request = FHttpModule::Get().CreateRequest();
-		FString server = "http://mavrinsoft.ru/GetCurrentVersion.php?";
-		FString app = "DialogueSystem";
-		FString major = "1";
-		FString minor = "6";
-		FString additional = "0";
-
-		FString url = FString::Printf(TEXT("%sapp=%s&major=%s&minor=%s&additional=%s"), *server, *app, *major, *minor, *additional);
-		request->SetURL(url);
-		request->SetVerb(TEXT("GET"));
-
-		request->OnProcessRequestComplete().BindRaw(this, &FDialogueSystemEditorModule::CurrentVersion_Response);
-		request->ProcessRequest();
-	}
-
-	void CurrentVersion_Response(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
-	{
-
-		if (bWasSuccessful)
-		{
-			TextResponse = Response->GetContentAsString();
-			UE_LOG(LogTemp, Warning, TEXT("Response: %s "), *TextResponse);
-			ShowNotification();
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Can't connect to the server"));
-		}
-	}
-
-	void ShowNotification()
-	{
-		if (TextResponse != "Plugin is up to date")
-		{
-			const FText NotificationErrorText = FText::Format(NSLOCTEXT("DialogueSystem", "NewVersionAvailebleTitle", "{0}"), FText::FromString(TextResponse));
-			FNotificationInfo Info(NotificationErrorText);
-			Info.Hyperlink = FSimpleDelegate::CreateStatic(&FDialogueSystemEditorModule::OpenSite);
-			Info.HyperlinkText = LOCTEXT("ShowOutputLogHyperlink", "DOWNLOAD");
-			Info.ExpireDuration = 5.0f;
-			NewVersionNotification = FSlateNotificationManager::Get().AddNotification(Info);
-		}
-	}
-
-	static void OpenSite()
-	{
-		FString TheURL = "http://mavrinsoft.ru";
-		FPlatformProcess::LaunchURL(*TheURL, nullptr, nullptr);
 	}
 };
 

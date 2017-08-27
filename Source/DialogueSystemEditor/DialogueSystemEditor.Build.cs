@@ -1,10 +1,10 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 
 using UnrealBuildTool;
 
 public class DialogueSystemEditor : ModuleRules
 {
-    public DialogueSystemEditor(TargetInfo Target)
+    public DialogueSystemEditor(ReadOnlyTargetRules Target) : base (Target)
 	{
 
 		PrivateIncludePaths.AddRange(
@@ -25,7 +25,6 @@ public class DialogueSystemEditor : ModuleRules
                 "PropertyEditor",
                 "EditorStyle",
                 "InputCore",
-                "HTTP",
                 "DialogueSystem"
 			}
 		);

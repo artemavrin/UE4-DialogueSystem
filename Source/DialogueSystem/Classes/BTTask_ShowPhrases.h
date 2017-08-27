@@ -1,9 +1,9 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 
 #pragma once
 #include "BehaviorTree/BTTaskNode.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
-#include "BTDialogueTypes.h"
+#include "BTContextNode_Interface.h"
 #include "Widget.h"
 #include "WidgetComponent.h"
 #include "UserWidget.h"
@@ -16,7 +16,7 @@
 * Show dialogue task node.
 */
 UCLASS()
-class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode
+class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode, public IBTContextNode_Interface
 {
 	GENERATED_UCLASS_BODY()
 
@@ -25,8 +25,11 @@ class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode
 	
 	void ShowNewDialoguePhrase(bool bSkip);
 	void ShowNewChar();
+	UWidget* GetEventListener(UWidgetTree* WidgetTree);
 	void SaveDefaultCameraDataForAll(UBTNode* Node);
 	void SaveDefaultCameraData(UCameraComponent* PlayerCamera);
+
+	FText GetCurrentPhrase();
 
 	/** Dialogue widget */
 	UPROPERTY(EditInstanceOnly, Category = Widget)
@@ -110,4 +113,5 @@ protected:
 
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
+	
 };

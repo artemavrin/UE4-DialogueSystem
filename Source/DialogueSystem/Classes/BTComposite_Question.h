@@ -1,16 +1,16 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 #pragma once
 
 #include "BehaviorTree/BTCompositeNode.h"
 #include "DialogueSettings.h"
-#include "BTDialogueTypes.h"
+#include "BTContextNode_Interface.h"
 #include "BTComposite_Question.generated.h"
 
 /**
 * Question composite node.
 */
 UCLASS()
-class DIALOGUESYSTEM_API UBTComposite_Question : public UBTCompositeNode
+class DIALOGUESYSTEM_API UBTComposite_Question : public UBTCompositeNode, public IBTContextNode_Interface
 {
 	GENERATED_UCLASS_BODY()
 
@@ -41,7 +41,14 @@ class DIALOGUESYSTEM_API UBTComposite_Question : public UBTCompositeNode
 
 	void SetVisibility(APlayerController* PlayerController, bool NewVisibility) const;
 
+	FText GetQuestionThumbnail(UBlackboardComponent * Blackboard) const;
+
 #if WITH_EDITOR
 	virtual FName GetNodeIconName() const override;
 #endif
+
+	/** Set by WaitAnswer, and checked by QuestionGroup; true if visible & decorators agree. */
+	bool bCanExecute;
+	/** Set by WaitAnswer, tested by QuestionGroup. */
+	bool bSelected;
 };

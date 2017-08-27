@@ -1,8 +1,13 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 #pragma once
 
 #include "DialogueSystemEditorPrivatePCH.h"
 #include "QuestionCustomization.h"
+
+#include "DetailLayoutBuilder.h"
+#include "DetailWidgetRow.h"
+#include "IDetailPropertyRow.h"
+#include "DetailCategoryBuilder.h"
 
 #define LOCTEXT_NAMESPACE "DialogueSystem"
 

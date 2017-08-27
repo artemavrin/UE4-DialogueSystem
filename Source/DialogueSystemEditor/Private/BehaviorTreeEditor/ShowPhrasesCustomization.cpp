@@ -3,6 +3,8 @@
 #include "ShowPhrasesCustomization.h"
 #include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
 
+#include "IDetailChildrenBuilder.h"
+
 #define LOCTEXT_NAMESPACE "DialogueSystem"
 
 /////////////////////////////
@@ -115,6 +117,7 @@ void FTextOptionsCustomization::CustomizeChildren(TSharedRef<class IPropertyHand
 	bHideLastPhrase = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bHideLastPhrase));
 	GeneralShowingTime = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, GeneralShowingTime));
 	UseGeneralTime = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, UseGeneralTime));
+	bShowRandomPhrase = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bShowRandomPhrase));
 	DialoguePhraseSlotName = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, DialoguePhraseSlotName));
 	DialogueQuestionsSlotName = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, DialogueQuestionsSlotName));
 	Phrases = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, Phrases));
@@ -125,6 +128,7 @@ void FTextOptionsCustomization::CustomizeChildren(TSharedRef<class IPropertyHand
 	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bHideLastPhrase)).ToSharedRef());
 	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, GeneralShowingTime)).ToSharedRef());
 	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, UseGeneralTime)).ToSharedRef());
+	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bShowRandomPhrase)).ToSharedRef());
 	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, DialoguePhraseSlotName)).ToSharedRef());
 	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, DialogueQuestionsSlotName)).ToSharedRef());
 	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, Phrases)).ToSharedRef());
@@ -210,7 +214,6 @@ void FCinematicOptionsCustomization::OnSettingMatineeChange(FString NewValue)
 
 TSharedRef<SWidget> FCinematicOptionsCustomization::OnGetMatineeList() const
 {
-	
 	FMenuBuilder MenuBuilder(true, NULL);
 
 	FUIAction ItemAction(FExecuteAction::CreateSP(this, &FCinematicOptionsCustomization::OnSettingMatineeChange, FString("None")));
@@ -219,8 +222,8 @@ TSharedRef<SWidget> FCinematicOptionsCustomization::OnGetMatineeList() const
 	for (TObjectIterator<AMatineeActor> It; It; ++It)
 	{
 		AMatineeActor* MatineeActor = *It;
-		FUIAction ItemAction(FExecuteAction::CreateSP(this, &FCinematicOptionsCustomization::OnSettingMatineeChange, MatineeActor->GetName()));
-		MenuBuilder.AddMenuEntry(FText::FromString(MatineeActor->GetName()), TAttribute<FText>(), FSlateIcon(), ItemAction);
+		FUIAction Action(FExecuteAction::CreateSP(this, &FCinematicOptionsCustomization::OnSettingMatineeChange, MatineeActor->GetName()));
+		MenuBuilder.AddMenuEntry(FText::FromString(MatineeActor->GetName()), TAttribute<FText>(), FSlateIcon(), Action);
 	}
 
 	return MenuBuilder.MakeWidget();

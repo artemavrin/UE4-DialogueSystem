@@ -1,4 +1,4 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 
 #pragma once
 #include "DialogueSystemEditorPrivatePCH.h"
@@ -74,23 +74,23 @@ void FQuestBookEditor::AddReferencedObjects(FReferenceCollector& Collector)
 	Collector.AddReferencedObject(QuestBookBeingEdited);
 }
 
-void FQuestBookEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>& TabManager)
+void FQuestBookEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager)
 {
-	WorkspaceMenuCategory = TabManager->AddLocalWorkspaceMenuCategory(LOCTEXT("WorkspaceMenu_QuestBookEditor", "QuestBook Editor"));
+	WorkspaceMenuCategory = InTabManager->AddLocalWorkspaceMenuCategory(LOCTEXT("WorkspaceMenu_QuestBookEditor", "QuestBook Editor"));
 	auto WorkspaceMenuCategoryRef = WorkspaceMenuCategory.ToSharedRef();
 
-	FAssetEditorToolkit::RegisterTabSpawners(TabManager);
+	FAssetEditorToolkit::RegisterTabSpawners(InTabManager);
 
-	TabManager->RegisterTabSpawner(FQuestBookEditorTabs::DetailsID, FOnSpawnTab::CreateSP(this, &FQuestBookEditor::SpawnTab_Details))
+	InTabManager->RegisterTabSpawner(FQuestBookEditorTabs::DetailsID, FOnSpawnTab::CreateSP(this, &FQuestBookEditor::SpawnTab_Details))
 		.SetDisplayName(LOCTEXT("DetailsTab", "Quest list"))
 		.SetGroup(WorkspaceMenuCategoryRef)
 		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
 
 }
 
-void FQuestBookEditor::UnregisterTabSpawners(const TSharedRef<class FTabManager>& TabManager)
+void FQuestBookEditor::UnregisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager)
 {
-	FAssetEditorToolkit::UnregisterTabSpawners(TabManager);
+	FAssetEditorToolkit::UnregisterTabSpawners(InTabManager);
 }
 
 TSharedRef<SDockTab> FQuestBookEditor::SpawnTab_Details(const FSpawnTabArgs& Args)

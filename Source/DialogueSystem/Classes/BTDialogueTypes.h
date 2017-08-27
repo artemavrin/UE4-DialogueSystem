@@ -1,9 +1,39 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 
 #pragma once
 #include "Runtime/AIModule/Classes/BehaviorTree/BehaviorTreeTypes.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/Texture2D.h"
 #include "BTDialogueTypes.generated.h"
+
+/**
+* Dialogue Argument Struct
+*/
+USTRUCT()
+struct DIALOGUESYSTEM_API FBTDialogueParameter
+{
+
+	GENERATED_USTRUCT_BODY()
+
+public:
+
+	UPROPERTY(EditInstanceOnly, Category = DialogueParameter) FString StringKey;
+	UPROPERTY(EditInstanceOnly, Category = DialogueParameter) FBlackboardKeySelector BlackboardKey;
+
+public:
+
+	void PushArgument(FFormatNamedArguments& DialogueArguments, UBlackboardComponent * Blackboard) const
+	{
+
+		if (Blackboard)
+		{
+			FString TextValue = Blackboard->GetValueAsString(BlackboardKey.SelectedKeyName);
+			DialogueArguments.Add(StringKey, FText::FromString(TextValue));
+		}
+
+	}
+
+};
 
 UENUM()
 enum class ETextEffect : uint8
@@ -54,6 +84,10 @@ struct DIALOGUESYSTEM_API FBTDialogueTextOptions
 	/** Enable to use general time for all phrases */
 	UPROPERTY(EditInstanceOnly, Category = General)
 	bool UseGeneralTime;
+
+	/** Enable to show just one random phrase */
+	UPROPERTY(EditInstanceOnly, Category = General)
+	bool bShowRandomPhrase;
 
 	/** Name of TextBlock where will be show phrases */
 	UPROPERTY(EditInstanceOnly, Category = Widget)

@@ -1,4 +1,4 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 
 #include "DialogueSystemEditorPrivatePCH.h"
 #include "DialogueSystemStyle.h"
@@ -59,7 +59,7 @@ void FDialogueSystemStyle::Initialize()
 	}
 
 	FSlateStyleRegistry::RegisterSlateStyle(*StyleSet.Get());
-	FClassIconFinder::RegisterIconSource(StyleSet.Get());
+	//FClassIconFinder::RegisterIconSource(StyleSet.Get());
 };
 
 #undef IMAGE_PLUGIN_BRUSH
@@ -73,7 +73,7 @@ void FDialogueSystemStyle::Shutdown()
 	if (StyleSet.IsValid())
 	{
 		FSlateStyleRegistry::UnRegisterSlateStyle(*StyleSet.Get());
-		FClassIconFinder::UnregisterIconSource(StyleSet.Get());
+		//FClassIconFinder::UnregisterIconSource(StyleSet.Get());
 		ensure(StyleSet.IsUnique());
 		StyleSet.Reset();
 	}

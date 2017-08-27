@@ -1,4 +1,4 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 
 #include "DialogueSystemPrivatePCH.h"
 #include "BTTask_WaitAnswer.h"
@@ -17,36 +17,62 @@ UBTComposite_QuestionGroup::UBTComposite_QuestionGroup(const FObjectInitializer&
 
 int32 UBTComposite_QuestionGroup::GetNextChildHandler(FBehaviorTreeSearchData& SearchData, int32 PrevChild, EBTNodeResult::Type LastResult) const
 {
-	int32 NextChildIdx = PrevChild + 1;
+	int32 NextChildIdx = 0;
 	UBTTask_WaitAnswer* AnswerNode = nullptr;
+	
+	for (auto& Child : Children)
+	{
+		UBTTask_WaitAnswer* node = Cast<UBTTask_WaitAnswer>(Child.ChildTask);
+		if (node)
+		{
+			AnswerNode = node;
+			break;
+		}
+	}
+	
+	if(!AnswerNode) {
+#if WITH_EDITOR
+		FMessageLog("PIE").Error()
+			->AddToken(FTextToken::Create(LOCTEXT("GetAnswerNode", "Node ")))
+			->AddToken(FUObjectToken::Create(this))
+			->AddToken(FTextToken::Create(LOCTEXT("ErrorTree", " in ")))
+			->AddToken(FUObjectToken::Create((UObject*)SearchData.OwnerComp.GetCurrentTree()))
+			->AddToken(FTextToken::Create(LOCTEXT("QuestionGroupHasNoAnswerNode", "has no Wait Answer node!")));
+#endif
+		return BTSpecialChild::ReturnToParent;
+	}
 
 	if (PrevChild == -1)
 	{
-		NextChildIdx = BTSpecialChild::ReturnToParent;
-
-		for (auto& Child : Children)
+		NextChildIdx = 0; // PrevChild + 1 = 0
+	}
+	else
+	{
+		bool bFound = false;
+		for(int32 Index = PrevChild + 1; !bFound && Index != Children.Num(); ++Index)
 		{
-			AnswerNode = Cast<UBTTask_WaitAnswer>(Child.ChildTask);
-			if (AnswerNode)
+			NextChildIdx = Index;
+			UBTComposite_Question* Question = Cast<UBTComposite_Question>(Children[Index].ChildComposite);
+			
+			if(!Question) {
+				bFound = true;
+			}
+			else if(Question->bCanExecute && Question->bSelected)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("#1.1"));
-				NextChildIdx = PrevChild + 1;
-				break;
+				bFound = true;
+				if(Question->bHideAfterSelect)
+				{
+					Question->SetVisibility(AnswerNode->PlayerController, false);
+				}
 			}
 		}
-		if (!AnswerNode) {
-#if WITH_EDITOR
-			FMessageLog("PIE").Error()
-				->AddToken(FTextToken::Create(LOCTEXT("GetAnswerNode", "Node ")))
-				->AddToken(FUObjectToken::Create(this))
-				->AddToken(FTextToken::Create(LOCTEXT("ErrorTree", " in ")))
-				->AddToken(FUObjectToken::Create((UObject*)SearchData.OwnerComp.GetCurrentTree()))
-				->AddToken(FTextToken::Create(LOCTEXT("QuestionGroupHasNoAnswerNode", "has no Wait Answer node!")));
-#endif
-			return BTSpecialChild::ReturnToParent;
+		if(!bFound)
+		{
+			// Return to WaitAnswer
+			NextChildIdx = 0;
 		}
 	}
-
+	
 	if (NextChildIdx == GetChildrenNum())
 	{
 		NextChildIdx = 0;

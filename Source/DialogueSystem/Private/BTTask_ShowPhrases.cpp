@@ -1,4 +1,4 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 
 #include "DialogueSystemPrivatePCH.h"
 #include "SoundDefinitions.h"
@@ -119,7 +119,15 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 						{
 							ShowingNumPhrase = 0;
 						}
-						FText StartPhrase = DialogueTextOptions.Phrases.Num() > 0 ? DialogueTextOptions.Phrases[ShowingNumPhrase].Phrase : FText::GetEmpty();
+
+						// random phrase
+						if (DialogueTextOptions.bShowRandomPhrase && PhrasesCount > 0)
+						{
+							ShowingNumPhrase = FMath::RandRange(0, PhrasesCount);
+						}
+
+						FText StartPhrase = GetCurrentPhrase();
+
 						if (DialogueTextOptions.TextEffect == ETextEffect::NoEffect || DialogueTextOptions.Delay == 0.0f)
 						{
 							StartPhraseTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ShowPhraseText", "{0}"), StartPhrase));
@@ -268,7 +276,7 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 			}
 			// Event Listener
 
-			UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueEventListener"));
+			UWidget* DialogueEventListener = GetEventListener(WidgetTree);
 			if (DialogueEventListener != nullptr)
 			{
 				UDialogueEventListener* EventListener = Cast<UDialogueEventListener>(DialogueEventListener);
@@ -315,7 +323,7 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 {
 	if (bSkip && DialogueTextOptions.TextEffect == ETextEffect::Typewriter && !bShowingFullPhrase)
 	{
-		FText StartPhrase = DialogueTextOptions.Phrases[ShowingNumPhrase].Phrase;
+		FText StartPhrase = GetCurrentPhrase();
 		UTextBlock* StartPhraseTextBlock = Cast<UTextBlock>(DialoguePhraseSlot);
 		if (StartPhraseTextBlock)
 		{
@@ -330,10 +338,10 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 		return;
 	}
 	ShowingNumPhrase++;
-	if (ShowingNumPhrase <= PhrasesCount)
+	if (ShowingNumPhrase <= PhrasesCount && !DialogueTextOptions.bShowRandomPhrase)
 	{
 		bTextFinished = false;
-		FText StartPhrase = DialogueTextOptions.Phrases[ShowingNumPhrase].Phrase;
+		FText StartPhrase = GetCurrentPhrase();
 		UTextBlock* StartPhraseTextBlock = Cast<UTextBlock>(DialoguePhraseSlot);
 
 		if (DialogueTextOptions.TextEffect == ETextEffect::Typewriter && DialogueTextOptions.Delay > 0)
@@ -358,7 +366,6 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 			float ShowingTime = DialogueTextOptions.UseGeneralTime ? DialogueTextOptions.GeneralShowingTime : DialogueTextOptions.Phrases[ShowingNumPhrase].ShowingTime;
 			OwnerActor->GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, ShowingTime, false);
 		}
-
 		//phrase sound
 		if (DialogueTextOptions.Phrases[ShowingNumPhrase].SoundToPlay)
 		{
@@ -461,7 +468,7 @@ void UBTTask_ShowPhrases::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		bTextFinished = false;
 		ShowingNumPhrase = 0;
 		UWidgetTree* WidgetTree = Widget->WidgetTree;
-		UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueEventListener"));
+		UWidget* DialogueEventListener = GetEventListener(WidgetTree);
 		if (DialogueEventListener != nullptr)
 		{
 			UDialogueEventListener* EventListener = Cast<UDialogueEventListener>(DialogueEventListener);
@@ -472,6 +479,20 @@ void UBTTask_ShowPhrases::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		}
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
+}
+
+UWidget* UBTTask_ShowPhrases::GetEventListener(UWidgetTree* WidgetTree)
+{
+	UWidget* FoundWidget = nullptr;
+
+	WidgetTree->ForEachWidget([&](UWidget* LoopWidget){
+		if (UDialogueEventListener* EventListener = Cast<UDialogueEventListener>(LoopWidget))
+		{
+			FoundWidget = LoopWidget;
+		}
+	});
+
+	return FoundWidget;
 }
 
 void UBTTask_ShowPhrases::SaveDefaultCameraDataForAll(UBTNode* Node)
@@ -517,6 +538,21 @@ void UBTTask_ShowPhrases::SaveDefaultCameraData(UCameraComponent* Camera)
 	}
 }
 
+FText UBTTask_ShowPhrases::GetCurrentPhrase()
+{
+
+	if (DialogueTextOptions.Phrases.IsValidIndex(ShowingNumPhrase))
+	{
+		FFormatNamedArguments DialogueArguments;
+		GetPhrasesContext(this, DialogueArguments, BlackboardComp);
+
+		return FText::Format(DialogueTextOptions.Phrases[ShowingNumPhrase].Phrase, DialogueArguments);
+	}
+
+	return FText::GetEmpty();
+
+}
+
 FString UBTTask_ShowPhrases::GetStaticDescription() const
 {
 	FString StringPhrases;
@@ -524,6 +560,10 @@ FString UBTTask_ShowPhrases::GetStaticDescription() const
 		DialogueSoundOptions.bPlaySound && DialogueSoundOptions.SoundToPlay ? *DialogueSoundOptions.SoundToPlay->GetName() : TEXT("none"));
 	if (DialogueTextOptions.Phrases.Num() > 0)
 	{
+		if (DialogueTextOptions.bShowRandomPhrase)
+		{
+			StringPhrases += TEXT("\nRandom:");
+		}
 		for (int32 i = 0; i < DialogueTextOptions.Phrases.Num(); i++)
 		{
 			if (StringPhrases == TEXT(""))
@@ -544,8 +584,9 @@ FString UBTTask_ShowPhrases::GetStaticDescription() const
 
 	if (!bShowPropertyDetails)
 	{
-		StringPhrases = FString::Printf(TEXT("Sound: %s \nPhrases: %i"),
+		StringPhrases = FString::Printf(TEXT("Sound: %s \n%sPhrases: %i"),
 			DialogueSoundOptions.bPlaySound && DialogueSoundOptions.SoundToPlay ? *DialogueSoundOptions.SoundToPlay->GetName() : TEXT("none"),
+			DialogueTextOptions.bShowRandomPhrase ? TEXT("Random ") : TEXT(""),
 			DialogueTextOptions.Phrases.Num());
 	}
 

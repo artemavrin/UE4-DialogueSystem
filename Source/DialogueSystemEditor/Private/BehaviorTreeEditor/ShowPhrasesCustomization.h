@@ -1,8 +1,11 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 
 #pragma once
 
-#include "Editor/DetailCustomizations/Private/DetailCustomizationsPrivatePCH.h"
+#include "IPropertyTypeCustomization.h"
+
+class IPropertyHandle;
+
 
 class FTextPhrasesCustomization : public IPropertyTypeCustomization
 {
@@ -37,6 +40,7 @@ private:
 	TSharedPtr<IPropertyHandle> bHideLastPhrase;
 	TSharedPtr<IPropertyHandle> GeneralShowingTime;
 	TSharedPtr<IPropertyHandle> UseGeneralTime;
+	TSharedPtr<IPropertyHandle> bShowRandomPhrase;
 	TSharedPtr<IPropertyHandle> DialoguePhraseSlotName;
 	TSharedPtr<IPropertyHandle> DialogueQuestionsSlotName;
 	TSharedPtr<IPropertyHandle> Phrases;

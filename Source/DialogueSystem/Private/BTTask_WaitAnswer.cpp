@@ -1,4 +1,4 @@
-// Copyright 2015 Mavrin Artem. All Rights Reserved.
+//Copyright (c) 2016 Artem A. Mavrin and other contributors
 
 #include "DialogueSystemPrivatePCH.h"
 #include "BTComposite_Question.h"
@@ -32,6 +32,7 @@ UBTTask_WaitAnswer::UBTTask_WaitAnswer(const FObjectInitializer& ObjectInitializ
 
 EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	ClearAnswer();
 	EBTNodeResult::Type NodeResult = !bAnswerDone ? EBTNodeResult::InProgress : NodeResult = EBTNodeResult::Succeeded;
 	TimerCount = Timer;
 	AActor* OwnerActor = OwnerComp.GetOwner();
@@ -113,12 +114,21 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 							auto& Child = CBTNode->Children[Index];
 							UBTComposite_Question* Question = Cast<UBTComposite_Question>(Child.ChildComposite);
 							bool bDecoratorOk = CBTNode->DoDecoratorsAllowExecution(OwnerComp, OwnerComp.GetActiveInstanceIdx(), Index);
-							if (Question 
-								&& Question->Children.Num() > 0 
-								&& Question->GetVisibility(PlayerController) 
-								&& Question->bVisible 
-								&& bDecoratorOk)
+
+							if(Question)
 							{
+								Question->bCanExecute = false;
+								Question->bSelected = false;
+							}
+							if (
+									Question
+									&& Question->Children.Num() > 0
+									&& Question->GetVisibility(PlayerController)
+									&& Question->bVisible
+									&& bDecoratorOk
+								)
+							{
+								Question->bCanExecute = true;
 								UDialogueButton *NewSampleButton = NewObject<UDialogueButton>(this, NAME_None, SampleButton->GetFlags(), SampleButton);
 								UTextBlock *NewSampleTextBlock = NewObject<UTextBlock>(this, NAME_None, SampleTextBlock->GetFlags(), SampleTextBlock);
 
@@ -136,7 +146,7 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 									NewSampleButton->IsFocusable = false;
 								}
 
-								NewSampleTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ButtonText", "{0}"), Question->QuestionThumbnail));
+								NewSampleTextBlock->SetText(FText::Format(NSLOCTEXT("DialogueSystem", "ButtonText", "{0}"), Question->GetQuestionThumbnail(BlackboardComp)));
 								UWidget* Oldtext = NewSampleButton->GetChildAt(0);
 								NewSampleButton->WaitTask = this;
 								NewSampleButton->RemoveChild(Oldtext);
@@ -147,7 +157,7 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 					}
 				}
 				// Event Listener
-				UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueEventListener"));
+				UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueListener"));
 				if (DialogueEventListener != nullptr)
 				{
 					UDialogueEventListener* EventListener = Cast<UDialogueEventListener>(DialogueEventListener);
@@ -322,6 +332,21 @@ FString UBTTask_WaitAnswer::GetStaticDescription() const
 void UBTTask_WaitAnswer::SetAnswer(FText Text)
 {
 	SelectedAnswer = FText::Format(NSLOCTEXT("DialogueSystem", "ButtonText", "{0}"), Text);
+	
+	for(auto& Child : GetParentNode()->Children)
+	{
+		UBTComposite_Question* Question = Cast<UBTComposite_Question>(Child.ChildComposite);
+		if(Question) {
+
+			FText FormatedQuestion = Question->GetQuestionThumbnail(BlackboardComp);
+			if(FormatedQuestion.EqualTo(SelectedAnswer))
+			{
+				Question->bSelected = true;
+				break;
+			}
+		}
+	}
+	
 	bAnswerDone = true;
 }
 

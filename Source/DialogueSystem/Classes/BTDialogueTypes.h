@@ -182,7 +182,7 @@ struct DIALOGUESYSTEM_API FBTDialogueCameraOptions
 	FBlackboardKeySelector PlayerCamera;
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct DIALOGUESYSTEM_API FBTDialogueCinematicOptions
 {
 	GENERATED_USTRUCT_BODY()

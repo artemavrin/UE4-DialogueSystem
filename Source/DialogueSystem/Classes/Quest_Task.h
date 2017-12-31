@@ -6,7 +6,7 @@
 /**
 * Quest task.
 */
-USTRUCT()
+USTRUCT(BlueprintType)
 struct DIALOGUESYSTEM_API FQuest_Task
 {
 	GENERATED_BODY()

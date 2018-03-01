@@ -187,17 +187,17 @@ struct DIALOGUESYSTEM_API FBTDialogueCinematicOptions
 {
 	GENERATED_USTRUCT_BODY()
 
-	/** Enable to play Matinee */
+	/** Enable to play Sequence */
 	UPROPERTY(EditInstanceOnly, Category = Cinematic)
-	bool bPlayMatinee;
+	bool bPlaySequence;
 
-	/** Loop Matinee */
+	/** Loop Sequence */
 	UPROPERTY(EditInstanceOnly, Category = Cinematic)
 	bool bLoop;
 
-	/** Matinee*/
+	/** Sequence*/
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Cinematic)
-	FString Matinee;
+	FString Sequence;
 
 };
 

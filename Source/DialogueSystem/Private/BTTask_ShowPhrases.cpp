@@ -4,7 +4,8 @@
 #include "SoundDefinitions.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
-#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
+/*#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"*/
+#include "Runtime/Engine/Classes/LevelSequence/LevelSequenceActor.h"
 #include "UserWidget.h"
 #include "WidgetComponent.h"
 #include "BTDialogueTypes.h"
@@ -210,7 +211,7 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 			// camera
 			if (DialogueCameraOptions.bUseCamera)
 			{
-				if (!DialogueCameraOptions.CameraToView.IsNone() && !DialogueCameraOptions.PlayerCamera.IsNone() && !DialogueCinematicOptions.bPlayMatinee)
+				if (!DialogueCameraOptions.CameraToView.IsNone() && !DialogueCameraOptions.PlayerCamera.IsNone() && !DialogueCinematicOptions.bPlaySequence)
 				{
 					FName CameraToViewKeyName = DialogueCameraOptions.CameraToView.SelectedKeyName;
 					BlackboardComp = OwnerComp.GetBlackboardComponent();
@@ -235,15 +236,15 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 				
 			}
 			// cinematic
-			if (DialogueCinematicOptions.bPlayMatinee && !DialogueCinematicOptions.Matinee.Equals("None"))
+			if (DialogueCinematicOptions.bPlaySequence && !DialogueCinematicOptions.Sequence.Equals("None"))
 			{
-				for (TActorIterator<AMatineeActor> It(OwnerActor->GetWorld()); It; ++It)
+				for (TActorIterator<ALevelSequenceActor> It(OwnerActor->GetWorld()); It; ++It)
 				{
-					MatineeActor = *It;
-					if (MatineeActor && MatineeActor->GetName().Equals(DialogueCinematicOptions.Matinee))
+					LevelSequenceActor = *It;
+					if (LevelSequenceActor && LevelSequenceActor->GetName().Equals(DialogueCinematicOptions.Sequence))
 					{
-						MatineeActor->bLooping = DialogueCinematicOptions.bLoop;
-						MatineeActor->Play();
+						LevelSequenceActor->bLooping = DialogueCinematicOptions.bLoop;
+						LevelSequenceActor->Play();
 						break;
 					}
 				}
@@ -410,9 +411,9 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 		}
 
 		// cinematic
-		if (DialogueCinematicOptions.bPlayMatinee && MatineeActor)
+		if (DialogueCinematicOptions.bPlaySequence && LevelSequenceActor)
 		{
-			MatineeActor->Stop();
+			LevelSequenceActor->Stop();
 		}
 	}
 }

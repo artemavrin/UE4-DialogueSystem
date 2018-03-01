@@ -11,6 +11,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BTTask_ShowPhrases.generated.h"
 
+#include "Runtime/Engine/Classes/LevelSequence/LevelSequenceActor.h"
+
 
 /**
 * Show dialogue task node.
@@ -87,7 +89,7 @@ class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode, public IBTCon
 	UWidget* DialogueNameSlot;
 	UAudioComponent* GeneralAudioComponent;
 	UAudioComponent* PhraseAudioComponent;
-	AMatineeActor* MatineeActor;
+	ALevelSequenceActor* LevelSequenceActor;
 
 	int32 CurrentCharNum;
 	TArray<TCHAR> FullString;

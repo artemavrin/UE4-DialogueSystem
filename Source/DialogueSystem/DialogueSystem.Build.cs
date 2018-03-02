@@ -19,6 +19,7 @@ public class DialogueSystem : ModuleRules
                 "UMG",
                 "SlateCore",
                 "Slate",
+                "LevelSequence",
 								"AIModule",
                 "GameplayTasks"
 			}

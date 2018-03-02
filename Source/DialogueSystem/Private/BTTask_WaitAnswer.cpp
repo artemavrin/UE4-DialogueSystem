@@ -14,7 +14,7 @@
 #include "BTTask_ShowPhrases.h"
 #include "BTTask_CloseDialogue.h"
 /*#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"*/
-#include "Runtime/Engine/Classes/LevelSequence/LevelSequenceActor.h"
+#include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
 #include "UObjectToken.h"
 
 #define LOCTEXT_NAMESPACE "DialogueSystem"
@@ -215,8 +215,8 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 				LevelSequenceActor = *It;
 				if (LevelSequenceActor && LevelSequenceActor->GetName().Equals(DialogueCinematicOptions.Sequence))
 				{
-					LevelSequenceActor->bLooping = DialogueCinematicOptions.bLoop;
-					LevelSequenceActor->Play();
+					//LevelSequenceActor->bLooping = DialogueCinematicOptions.bLoop;
+					LevelSequenceActor->PostInitializeComponents();
 					break;
 				}
 			}
@@ -260,7 +260,7 @@ void UBTTask_WaitAnswer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		// cinematic
 		if (DialogueCinematicOptions.bPlaySequence && LevelSequenceActor)
 		{
-			LevelSequenceActor->Stop();
+			//LevelSequenceActor->Stop();
 		}
 		// Event Listener
 		UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueEventListener"));

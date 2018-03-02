@@ -9,9 +9,9 @@
 #include "UserWidget.h"
 #include "Camera/CameraComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
 #include "BTTask_ShowPhrases.generated.h"
 
-#include "Runtime/Engine/Classes/LevelSequence/LevelSequenceActor.h"
 
 
 /**

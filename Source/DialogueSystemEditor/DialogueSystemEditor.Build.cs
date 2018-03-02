@@ -25,6 +25,7 @@ public class DialogueSystemEditor : ModuleRules
                 "PropertyEditor",
                 "EditorStyle",
                 "InputCore",
+                "LevelSequence",
                 "DialogueSystem"
 			}
 		);

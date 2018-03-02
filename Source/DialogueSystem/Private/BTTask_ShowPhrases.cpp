@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 /*#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"*/
-#include "Runtime/Engine/Classes/LevelSequence/LevelSequenceActor.h"
+#include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
 #include "UserWidget.h"
 #include "WidgetComponent.h"
 #include "BTDialogueTypes.h"
@@ -243,8 +243,8 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 					LevelSequenceActor = *It;
 					if (LevelSequenceActor && LevelSequenceActor->GetName().Equals(DialogueCinematicOptions.Sequence))
 					{
-						LevelSequenceActor->bLooping = DialogueCinematicOptions.bLoop;
-						LevelSequenceActor->Play();
+					//	LevelSequenceActor->bLooping = DialogueCinematicOptions.bLoop;
+						LevelSequenceActor->PostInitializeComponents();
 						break;
 					}
 				}
@@ -413,7 +413,7 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 		// cinematic
 		if (DialogueCinematicOptions.bPlaySequence && LevelSequenceActor)
 		{
-			LevelSequenceActor->Stop();
+			//LevelSequenceActor->Stop();
 		}
 	}
 }

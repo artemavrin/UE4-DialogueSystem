@@ -3,7 +3,7 @@
 #include "ShowPhrasesCustomization.h"
 /*#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
 */
-#include "Runtime/Engine/Classes/Sequencer/LevelSequenceActor.h"
+#include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
 #include "IDetailChildrenBuilder.h"
 
 #define LOCTEXT_NAMESPACE "DialogueSystem"
@@ -38,7 +38,7 @@ void FTextPhrasesCustomization::CustomizeChildren(TSharedRef<class IPropertyHand
 	SoundToPlay = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextPhrase, SoundToPlay));
 	ShowingTime = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextPhrase, ShowingTime));
 
-	ChildBuilder.AddChildContent(LOCTEXT("Phrase", "Phrase"))
+	ChildBuilder.AddCustomRow(LOCTEXT("Phrase", "Phrase"))
 		.NameContent()
 		[
 			Phrase->CreatePropertyNameWidget()
@@ -49,8 +49,8 @@ void FTextPhrasesCustomization::CustomizeChildren(TSharedRef<class IPropertyHand
 			Phrase->CreatePropertyValueWidget()
 		];
 
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextPhrase, SoundToPlay)).ToSharedRef());
-	ChildBuilder.AddChildContent(LOCTEXT("ShowingTime", "ShowingTime"))
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextPhrase, SoundToPlay)).ToSharedRef());
+	ChildBuilder.AddCustomRow(LOCTEXT("ShowingTime", "ShowingTime"))
 		.NameContent()
 		[
 			ShowingTime->CreatePropertyNameWidget()
@@ -125,16 +125,16 @@ void FTextOptionsCustomization::CustomizeChildren(TSharedRef<class IPropertyHand
 	TextEffect = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, TextEffect));
 	Delay = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, Delay));
 
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bShowTextPhrases)).ToSharedRef());
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bHideLastPhrase)).ToSharedRef());
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, GeneralShowingTime)).ToSharedRef());
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, UseGeneralTime)).ToSharedRef());
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bShowRandomPhrase)).ToSharedRef());
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, DialoguePhraseSlotName)).ToSharedRef());
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, DialogueQuestionsSlotName)).ToSharedRef());
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, Phrases)).ToSharedRef());
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, TextEffect)).ToSharedRef());
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, Delay)).ToSharedRef()).Visibility(TAttribute<EVisibility>(this, &FTextOptionsCustomization::GetDelayVisibility));
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bShowTextPhrases)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bHideLastPhrase)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, GeneralShowingTime)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, UseGeneralTime)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, bShowRandomPhrase)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, DialoguePhraseSlotName)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, DialogueQuestionsSlotName)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, Phrases)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, TextEffect)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueTextOptions, Delay)).ToSharedRef()).Visibility(TAttribute<EVisibility>(this, &FTextOptionsCustomization::GetDelayVisibility));
 }
 
 EVisibility FTextOptionsCustomization::GetDelayVisibility() const
@@ -180,10 +180,10 @@ void FCinematicOptionsCustomization::CustomizeChildren(TSharedRef<class IPropert
 	bLoop = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bLoop));
 	Sequence = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, Sequence));
 
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlaySequence)).ToSharedRef());
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bLoop)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlaySequence)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bLoop)).ToSharedRef());
 
-	ChildBuilder.AddChildContent(LOCTEXT("Sequence", "Sequence"))
+	ChildBuilder.AddCustomRow(LOCTEXT("Sequence", "Sequence"))
 		.NameContent()
 		[
 			Sequence->CreatePropertyNameWidget()
@@ -237,7 +237,7 @@ FText FCinematicOptionsCustomization::GetCurrentSequenceName() const
 	for (TObjectIterator<ALevelSequenceActor> It; It; ++It)
 	{
 		ALevelSequenceActor* LevelSequenceActor = *It;
-		if (SettingName.EqualTo(FText::FromString(ALevelSequenceActor->GetName())))
+		if (SettingName.EqualTo(FText::FromString(LevelSequenceActor->GetName())))
 		{
 			return SettingName;
 		}

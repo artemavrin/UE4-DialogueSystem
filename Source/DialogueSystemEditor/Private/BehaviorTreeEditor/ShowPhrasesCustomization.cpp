@@ -1,8 +1,8 @@
 
 #include "DialogueSystemEditorPrivatePCH.h"
 #include "ShowPhrasesCustomization.h"
-/*#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
-*/
+#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
+
 #include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
 #include "IDetailChildrenBuilder.h"
 
@@ -176,12 +176,44 @@ void FCinematicOptionsCustomization::CustomizeHeader(TSharedRef<class IPropertyH
 
 void FCinematicOptionsCustomization::CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	bPlaySequence= StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlaySequence));
+
+	bPlayMatinee = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlayMatinee));
 	bLoop = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bLoop));
+	Matinee = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, Matinee));
+
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlayMatinee)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bLoop)).ToSharedRef());
+
+	ChildBuilder.AddCustomRow(LOCTEXT("Matinee", "Matinee"))
+		.NameContent()
+		[
+			Matinee->CreatePropertyNameWidget()
+		]
+	.ValueContent()
+		.HAlign(HAlign_Fill)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+		.MaxWidth(109.0f)
+		[
+			SNew(SComboButton)
+			.OnGetMenuContent(this, &FCinematicOptionsCustomization::OnGetMatineeList)
+		.ContentPadding(FMargin(2.0f, 2.0f))
+		.ButtonContent()
+		[
+			SNew(STextBlock)
+			.Text(this, &FCinematicOptionsCustomization::GetCurrentMatineeName)
+		.Font(IDetailLayoutBuilder::GetDetailFont())
+		]
+		]
+		];
+
+	bPlaySequence= StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlaySequence));
+	bAutoPlay = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bAutoPlay));
 	Sequence = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, Sequence));
 
 	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlaySequence)).ToSharedRef());
-	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bLoop)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bAutoPlay)).ToSharedRef());
 
 	ChildBuilder.AddCustomRow(LOCTEXT("Sequence", "Sequence"))
 		.NameContent()
@@ -244,6 +276,45 @@ FText FCinematicOptionsCustomization::GetCurrentSequenceName() const
 	}
 
 	Sequence->SetValueFromFormattedString(FString("None"));
+	return FText::FromString("None");
+}
+
+void FCinematicOptionsCustomization::OnSettingMatineeChange(FString NewValue)
+{
+	Matinee->SetValueFromFormattedString(NewValue);
+}
+
+TSharedRef<SWidget> FCinematicOptionsCustomization::OnGetMatineeList() const
+{
+	FMenuBuilder MenuBuilder(true, NULL);
+
+	FUIAction ItemAction(FExecuteAction::CreateSP(this, &FCinematicOptionsCustomization::OnSettingMatineeChange, FString("None")));
+	MenuBuilder.AddMenuEntry(FText::FromString(TEXT("None")), TAttribute<FText>(), FSlateIcon(), ItemAction);
+
+	for (TObjectIterator<AMatineeActor> It; It; ++It)
+	{
+		AMatineeActor* MatineeActor = *It;
+		FUIAction Action(FExecuteAction::CreateSP(this, &FCinematicOptionsCustomization::OnSettingMatineeChange, MatineeActor->GetName()));
+		MenuBuilder.AddMenuEntry(FText::FromString(MatineeActor->GetName()), TAttribute<FText>(), FSlateIcon(), Action);
+	}
+
+	return MenuBuilder.MakeWidget();
+}
+
+FText FCinematicOptionsCustomization::GetCurrentMatineeName() const
+{
+	FText SettingName;
+	Matinee->GetValueAsDisplayText(SettingName);
+	for (TObjectIterator<AMatineeActor> It; It; ++It)
+	{
+		AMatineeActor* MatineeActor = *It;
+		if (SettingName.EqualTo(FText::FromString(MatineeActor->GetName())))
+		{
+			return SettingName;
+		}
+	}
+
+	Matinee->SetValueFromFormattedString(FString("None"));
 	return FText::FromString("None");
 }
 

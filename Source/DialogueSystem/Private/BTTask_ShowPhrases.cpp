@@ -4,7 +4,7 @@
 #include "SoundDefinitions.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
-/*#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"*/
+#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
 #include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
 #include "UserWidget.h"
 #include "WidgetComponent.h"
@@ -236,6 +236,19 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 				
 			}
 			// cinematic
+			if (DialogueCinematicOptions.bPlayMatinee && !DialogueCinematicOptions.Matinee.Equals("None"))
+			{
+				for (TActorIterator<AMatineeActor> It(OwnerActor->GetWorld()); It; ++It)
+				{
+					MatineeActor = *It;
+					if (MatineeActor && MatineeActor->GetName().Equals(DialogueCinematicOptions.Matinee))
+					{
+						MatineeActor->bLooping = DialogueCinematicOptions.bLoop;
+						MatineeActor->Play();
+						break;
+					}
+				}
+			}
 			if (DialogueCinematicOptions.bPlaySequence && !DialogueCinematicOptions.Sequence.Equals("None"))
 			{
 				for (TActorIterator<ALevelSequenceActor> It(OwnerActor->GetWorld()); It; ++It)
@@ -243,8 +256,9 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 					LevelSequenceActor = *It;
 					if (LevelSequenceActor && LevelSequenceActor->GetName().Equals(DialogueCinematicOptions.Sequence))
 					{
-					//	LevelSequenceActor->bLooping = DialogueCinematicOptions.bLoop;
-						LevelSequenceActor->PostInitializeComponents();
+						LevelSequenceActor->bAutoPlay = DialogueCinematicOptions.bAutoPlay;
+					//	LevelSequenceActor->PostInitializeComponents();
+						LevelSequenceActor->InitializePlayer();
 						break;
 					}
 				}

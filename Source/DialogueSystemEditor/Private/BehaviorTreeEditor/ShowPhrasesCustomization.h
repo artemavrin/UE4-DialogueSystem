@@ -56,13 +56,20 @@ public:
 	/** IPropertyTypeCustomization interface */
 	virtual void CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 	virtual void CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
+	
+	void OnSettingMatineeChange(FString NewValue);
+	TSharedRef<SWidget> OnGetMatineeList() const;
+	FText GetCurrentMatineeName() const;
 
 	void OnSettingSequenceChange(FString NewValue);
 	TSharedRef<SWidget> OnGetSequenceList() const;
 	FText GetCurrentSequenceName() const;
 private:
+	TSharedPtr<IPropertyHandle> bPlayMatinee;
+	TSharedPtr<IPropertyHandle> Matinee;
 	/** Property handles of the properties we're editing */
 	TSharedPtr<IPropertyHandle> bPlaySequence;
 	TSharedPtr<IPropertyHandle> bLoop;
+	TSharedPtr<IPropertyHandle> bAutoPlay;
 	TSharedPtr<IPropertyHandle> Sequence;
 };

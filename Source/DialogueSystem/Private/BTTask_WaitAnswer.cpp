@@ -13,7 +13,7 @@
 #include "GameFramework/PlayerController.h"
 #include "BTTask_ShowPhrases.h"
 #include "BTTask_CloseDialogue.h"
-/*#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"*/
+#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
 #include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
 #include "UObjectToken.h"
 
@@ -208,6 +208,20 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 		}
 
 		// cinematic
+		if (DialogueCinematicOptions.bPlayMatinee && !DialogueCinematicOptions.Matinee.Equals("None"))
+		{
+			for (TActorIterator<AMatineeActor> It(OwnerActor->GetWorld()); It; ++It)
+			{
+				MatineeActor = *It;
+				if (MatineeActor && MatineeActor->GetName().Equals(DialogueCinematicOptions.Matinee))
+				{
+					MatineeActor->bLooping = DialogueCinematicOptions.bLoop;
+					MatineeActor->Play();
+					break;
+				}
+			}
+		}
+
 		if (DialogueCinematicOptions.bPlaySequence && !DialogueCinematicOptions.Sequence.Equals("None"))
 		{
 			for (TActorIterator<ALevelSequenceActor> It(OwnerActor->GetWorld()); It; ++It)
@@ -258,6 +272,10 @@ void UBTTask_WaitAnswer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	if (bAnswerDone)
 	{
 		// cinematic
+		if (DialogueCinematicOptions.bPlayMatinee && MatineeActor)
+		{
+			MatineeActor->Stop();
+		}
 		if (DialogueCinematicOptions.bPlaySequence && LevelSequenceActor)
 		{
 			//LevelSequenceActor->Stop();

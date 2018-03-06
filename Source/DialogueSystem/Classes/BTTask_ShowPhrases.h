@@ -9,6 +9,7 @@
 #include "UserWidget.h"
 #include "Camera/CameraComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
 #include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
 #include "BTTask_ShowPhrases.generated.h"
 
@@ -89,6 +90,7 @@ class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode, public IBTCon
 	UWidget* DialogueNameSlot;
 	UAudioComponent* GeneralAudioComponent;
 	UAudioComponent* PhraseAudioComponent;
+	AMatineeActor* MatineeActor;
 	ALevelSequenceActor* LevelSequenceActor;
 
 	int32 CurrentCharNum;

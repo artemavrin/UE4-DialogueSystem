@@ -186,14 +186,24 @@ USTRUCT(BlueprintType)
 struct DIALOGUESYSTEM_API FBTDialogueCinematicOptions
 {
 	GENERATED_USTRUCT_BODY()
+		/** Enable to play Matinee */
+		UPROPERTY(EditInstanceOnly, Category = Cinematic)
+		bool bPlayMatinee;
 
+	/** Matinee*/
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Cinematic)
+		FString Matinee;
 	/** Enable to play Sequence */
 	UPROPERTY(EditInstanceOnly, Category = Cinematic)
 	bool bPlaySequence;
 
-	/** Loop Sequence */
+	/** Loop Matinee */
 	UPROPERTY(EditInstanceOnly, Category = Cinematic)
 	bool bLoop;
+
+	/** Autoplay Sequence */
+	UPROPERTY(EditInstanceOnly, Category = Cinematic)
+	bool bAutoPlay;
 
 	/** Sequence*/
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Cinematic)

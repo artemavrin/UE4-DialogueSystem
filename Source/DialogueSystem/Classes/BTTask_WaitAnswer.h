@@ -76,6 +76,7 @@ private:
 	float TimerCount;
 	bool bIsUserWidget;
 	UUserWidget* Widget;
+	AMatineeActor* MatineeActor;
 	ALevelSequenceActor* LevelSequenceActor;
 
 public:

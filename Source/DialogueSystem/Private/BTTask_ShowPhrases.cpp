@@ -269,18 +269,19 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 			{
 				FName MeshKeyName = DialogueCharacterAnimationOptions.Mesh.SelectedKeyName;
 				BlackboardComp = OwnerComp.GetBlackboardComponent();
-				Mesh = Cast<USkeletalMeshComponent>(BlackboardComp->GetValueAsObject(MeshKeyName));
+					Mesh = Cast<USkeletalMeshComponent>(BlackboardComp->GetValueAsObject(MeshKeyName));
 				if (Mesh)
 				{
 					UAnimInstance *AnimInst = Mesh->GetAnimInstance();
-					if (AnimInst)
+					Mesh->PlayAnimation(DialogueCharacterAnimationOptions.Animation,DialogueCharacterAnimationOptions.bLoop);
+					/*if (AnimInst)
 					{
 						AnimInst->PlaySlotAnimationAsDynamicMontage(DialogueCharacterAnimationOptions.Animation, 
 							DialogueCharacterAnimationOptions.AnimationBlendOptions.SlotNodeName,
 							DialogueCharacterAnimationOptions.AnimationBlendOptions.BlendInTime,
 							DialogueCharacterAnimationOptions.AnimationBlendOptions.BlendOutTime,
 							DialogueCharacterAnimationOptions.AnimationBlendOptions.InPlayRate);
-					}
+					}*/
 					if (DialogueCharacterAnimationOptions.bWaitEndOfAnimation)
 					{
 						UAnimSequenceBase* SequenceBase = DialogueCharacterAnimationOptions.Animation;
@@ -427,6 +428,7 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 		// cinematic
 		if (DialogueCinematicOptions.bPlaySequence && LevelSequenceActor)
 		{
+			LevelSequenceActor->SequencePlayer->Stop();
 			//LevelSequenceActor->Stop();
 		}
 	}
@@ -463,7 +465,7 @@ void UBTTask_ShowPhrases::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		CharacterAnimationDuration -= DeltaSeconds;
 		if (CharacterAnimationDuration <=0.0f && DialogueCharacterAnimationOptions.bLoop && !bTextFinished)
 		{
-			UAnimInstance *AnimInst = Mesh->GetAnimInstance();
+			/*
 			if (AnimInst)
 			{
 				AnimInst->PlaySlotAnimationAsDynamicMontage(DialogueCharacterAnimationOptions.Animation,
@@ -472,6 +474,7 @@ void UBTTask_ShowPhrases::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 					DialogueCharacterAnimationOptions.AnimationBlendOptions.BlendOutTime,
 					DialogueCharacterAnimationOptions.AnimationBlendOptions.InPlayRate);
 			}
+			*/
 			UAnimSequenceBase* SequenceBase = DialogueCharacterAnimationOptions.Animation;
 			CharacterAnimationDuration = SequenceBase->SequenceLength / SequenceBase->RateScale;
 		}

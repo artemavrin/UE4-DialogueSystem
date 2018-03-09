@@ -20,6 +20,7 @@ public class DialogueSystem : ModuleRules
                 "SlateCore",
                 "Slate",
                 "LevelSequence",
+                "MovieScene",
 								"AIModule",
                 "GameplayTasks"
 			}

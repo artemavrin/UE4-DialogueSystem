@@ -47,7 +47,7 @@ void FQuestBookEditorCustomization::CustomizeChildren(TSharedRef<class IProperty
 	Experience = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FQuest, Experience));
 	Tasks = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FQuest, Tasks));
 
-	ChildBuilder.AddChildContent(LOCTEXT("Title", "Title"))
+	ChildBuilder.AddCustomRow(LOCTEXT("Title", "Title"))
 		.NameContent()
 		[
 			Title->CreatePropertyNameWidget()
@@ -57,7 +57,7 @@ void FQuestBookEditorCustomization::CustomizeChildren(TSharedRef<class IProperty
 		[
 			Title->CreatePropertyValueWidget()
 		];
-	ChildBuilder.AddChildContent(LOCTEXT("Description", "Description"))
+	ChildBuilder.AddCustomRow(LOCTEXT("Description", "Description"))
 		.NameContent()
 		[
 			Description->CreatePropertyNameWidget()
@@ -67,7 +67,7 @@ void FQuestBookEditorCustomization::CustomizeChildren(TSharedRef<class IProperty
 		[
 			Description->CreatePropertyValueWidget()
 		];
-	ChildBuilder.AddChildContent(LOCTEXT("IntroText", "IntroText"))
+	ChildBuilder.AddCustomRow(LOCTEXT("IntroText", "IntroText"))
 		.NameContent()
 		[
 			IntroText->CreatePropertyNameWidget()
@@ -77,7 +77,7 @@ void FQuestBookEditorCustomization::CustomizeChildren(TSharedRef<class IProperty
 		[
 			IntroText->CreatePropertyValueWidget()
 		];
-	ChildBuilder.AddChildContent(LOCTEXT("ProgressText", "ProgressText"))
+	ChildBuilder.AddCustomRow(LOCTEXT("ProgressText", "ProgressText"))
 		.NameContent()
 		[
 			ProgressText->CreatePropertyNameWidget()
@@ -87,7 +87,7 @@ void FQuestBookEditorCustomization::CustomizeChildren(TSharedRef<class IProperty
 		[
 			ProgressText->CreatePropertyValueWidget()
 		];
-	ChildBuilder.AddChildContent(LOCTEXT("FinishText", "FinishText"))
+	ChildBuilder.AddCustomRow(LOCTEXT("FinishText", "FinishText"))
 		.NameContent()
 		[
 			FinishText->CreatePropertyNameWidget()
@@ -98,7 +98,7 @@ void FQuestBookEditorCustomization::CustomizeChildren(TSharedRef<class IProperty
 			FinishText->CreatePropertyValueWidget()
 		];
 
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FQuest, Experience)).ToSharedRef());
-	ChildBuilder.AddChildProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FQuest, Tasks)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FQuest, Experience)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FQuest, Tasks)).ToSharedRef());
 
 }

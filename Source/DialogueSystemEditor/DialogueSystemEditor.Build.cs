@@ -6,8 +6,9 @@ public class DialogueSystemEditor : ModuleRules
 {
     public DialogueSystemEditor(ReadOnlyTargetRules Target) : base (Target)
 	{
+        PrivatePCHHeaderFile = "Private/DialogueSystemEditorPrivatePCH.h";
 
-		PrivateIncludePaths.AddRange(
+        PrivateIncludePaths.AddRange(
             new string[] { "DialogueSystemEditor/Private" });
 
         PublicDependencyModuleNames.AddRange(

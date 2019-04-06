@@ -4,6 +4,7 @@
 #include "Runtime/AIModule/Classes/BehaviorTree/BehaviorTreeTypes.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/Texture2D.h"
+#include "Sound/SoundCue.h"
 #include "BTDialogueTypes.generated.h"
 
 /**

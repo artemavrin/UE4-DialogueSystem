@@ -31,7 +31,7 @@ public:
 public:
 
 	bool VerifyExecution(EBTNodeResult::Type LastResult) const;
-	int32 GetNextChildHandler(struct FBehaviorTreeSearchData& SearchData, int32 PrevChild, EBTNodeResult::Type LastResult) const;
+	int32 GetNextChildHandler(struct FBehaviorTreeSearchData& SearchData, int32 PrevChild, EBTNodeResult::Type LastResult) const override;
 	void PushArguments(FFormatNamedArguments& DialogueArguments, UBlackboardComponent * Blackboard) const;
 
 public:

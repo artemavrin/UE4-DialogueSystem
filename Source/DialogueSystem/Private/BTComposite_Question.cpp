@@ -9,7 +9,7 @@ UBTComposite_Question::UBTComposite_Question(const FObjectInitializer& ObjectIni
 	NodeName = "Question";
 	bVisible = true;
 
-	OnNextChild.BindUObject(this, &UBTComposite_Question::GetNextChildHandler);
+	// OnNextChild.BindUObject(this, &UBTComposite_Question::GetNextChildHandler);
 }
 
 int32 UBTComposite_Question::GetNextChildHandler(FBehaviorTreeSearchData& SearchData, int32 PrevChild, EBTNodeResult::Type LastResult) const

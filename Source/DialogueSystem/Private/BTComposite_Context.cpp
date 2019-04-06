@@ -8,7 +8,7 @@ UBTComposite_Context::UBTComposite_Context(const FObjectInitializer& ObjectIniti
 	NodeName = "Context";
 	ExecutionMode = EContextExecutionMode::CE_Sequence;
 
-	OnNextChild.BindUObject(this, &UBTComposite_Context::GetNextChildHandler);
+	// OnNextChild.BindUObject(this, &UBTComposite_Context::GetNextChildHandler);
 }
 
 bool UBTComposite_Context::VerifyExecution(EBTNodeResult::Type LastResult) const

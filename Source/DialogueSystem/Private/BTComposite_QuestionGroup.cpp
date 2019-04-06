@@ -12,7 +12,7 @@ UBTComposite_QuestionGroup::UBTComposite_QuestionGroup(const FObjectInitializer&
 {
 	NodeName = "QuestionGroup";
 
-	OnNextChild.BindUObject(this, &UBTComposite_QuestionGroup::GetNextChildHandler);
+	// OnNextChild.BindUObject(this, &UBTComposite_QuestionGroup::GetNextChildHandler);
 }
 
 int32 UBTComposite_QuestionGroup::GetNextChildHandler(FBehaviorTreeSearchData& SearchData, int32 PrevChild, EBTNodeResult::Type LastResult) const

@@ -12,7 +12,7 @@ class DIALOGUESYSTEM_API UBTComposite_QuestionGroup : public UBTCompositeNode
 {
 	GENERATED_UCLASS_BODY()
 
-	int32 GetNextChildHandler(struct FBehaviorTreeSearchData& SearchData, int32 PrevChild, EBTNodeResult::Type LastResult) const;
+	int32 GetNextChildHandler(struct FBehaviorTreeSearchData& SearchData, int32 PrevChild, EBTNodeResult::Type LastResult) const override;
 
 	void SetCloseDialogue(bool	Close);
 

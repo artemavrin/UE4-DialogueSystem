@@ -6,8 +6,9 @@ public class DialogueSystem : ModuleRules
 {
 	public DialogueSystem(ReadOnlyTargetRules Target) : base (Target)
 	{
+        PrivatePCHHeaderFile = "Private/DialogueSystemPrivatePCH.h";
 
-		PrivateIncludePaths.AddRange(
+        PrivateIncludePaths.AddRange(
 			new string[] {"DialogueSystem/Private"});
 
         PublicDependencyModuleNames.AddRange(
@@ -19,7 +20,7 @@ public class DialogueSystem : ModuleRules
                 "UMG",
                 "SlateCore",
                 "Slate",
-								"AIModule",
+				"AIModule",
                 "GameplayTasks"
 			}
 		);

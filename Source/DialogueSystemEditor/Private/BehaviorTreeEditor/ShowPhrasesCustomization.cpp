@@ -207,12 +207,15 @@ void FCinematicOptionsCustomization::CustomizeChildren(TSharedRef<class IPropert
 		]
 		]
 		];
+	bUseCam = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bUseCam));
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bUseCam)).ToSharedRef());
 
-	bPlaySequence= StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlaySequence));
+
+	bPlaySeq= StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlaySeq));
 	bAutoPlay = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bAutoPlay));
 	Sequence = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, Sequence));
 
-	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlaySequence)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlaySeq)).ToSharedRef());
 	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bAutoPlay)).ToSharedRef());
 
 	ChildBuilder.AddCustomRow(LOCTEXT("Sequence", "Sequence"))
@@ -238,8 +241,29 @@ void FCinematicOptionsCustomization::CustomizeChildren(TSharedRef<class IPropert
 				]
 			]
 		];
+
+	bDialogueCamType = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bDialogueCamType));
+	//CamType = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, CamType));
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bDialogueCamType)).ToSharedRef());
+	//ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, CamType)).ToSharedRef()).Visibility(TAttribute<EVisibility>(this, &FCinematicOptionsCustomization::GetCamType));
+
 }
 
+/*
+EVisibility FCinematicOptionsCustomization::GetCamType() const
+{
+	uint8 Value;
+	bDialogueCamType->GetValue(Value);
+	if (Value == 1)
+	{
+		return EVisibility::Visible;
+	}
+	else
+	{
+		return EVisibility::Hidden;
+	}
+}
+*/
 void FCinematicOptionsCustomization::OnSettingSequenceChange(FString NewValue)
 {
 	Sequence->SetValueFromFormattedString(NewValue);

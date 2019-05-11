@@ -3,7 +3,9 @@
 #pragma once
 
 #include "IPropertyTypeCustomization.h"
-
+#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
+#include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
+#include "IDetailChildrenBuilder.h"
 class IPropertyHandle;
 
 
@@ -68,8 +70,10 @@ private:
 	TSharedPtr<IPropertyHandle> bPlayMatinee;
 	TSharedPtr<IPropertyHandle> Matinee;
 	/** Property handles of the properties we're editing */
-	TSharedPtr<IPropertyHandle> bPlaySequence;
+	TSharedPtr<IPropertyHandle> bPlaySeq;
 	TSharedPtr<IPropertyHandle> bLoop;
 	TSharedPtr<IPropertyHandle> bAutoPlay;
+	TSharedPtr<IPropertyHandle> bDialogueCamType;
+	TSharedPtr<IPropertyHandle> bUseCam;
 	TSharedPtr<IPropertyHandle> Sequence;
 };

@@ -2,7 +2,10 @@
 #pragma once
 
 #include "IDetailCustomization.h"
-
+#include "DetailLayoutBuilder.h"
+#include "DetailWidgetRow.h"
+#include "IDetailPropertyRow.h"
+#include "DetailCategoryBuilder.h"
 class IDetailLayoutBuilder;
 class IPropertyHandle;
 class SWidget;

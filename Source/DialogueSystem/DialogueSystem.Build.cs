@@ -1,5 +1,4 @@
 //Copyright (c) 2016 Artem A. Mavrin and other contributors
-
 using UnrealBuildTool;
 
 public class DialogueSystem : ModuleRules
@@ -7,7 +6,9 @@ public class DialogueSystem : ModuleRules
 	public DialogueSystem(ReadOnlyTargetRules Target) : base (Target)
 	{
 
-		PrivateIncludePaths.AddRange(
+       // PCHUsage = ModuleRules.PCHUsageMode.NoSharedPCHs;
+       //PrivatePCHHeaderFile = "Private/DialogueSystemPrivatePCH.h";
+        PrivateIncludePaths.AddRange(
 			new string[] {"DialogueSystem/Private"});
 
         PublicDependencyModuleNames.AddRange(
@@ -20,6 +21,7 @@ public class DialogueSystem : ModuleRules
                 "SlateCore",
                 "Slate",
                 "LevelSequence",
+                "CinematicCamera",
                 "MovieScene",
 								"AIModule",
                 "GameplayTasks"

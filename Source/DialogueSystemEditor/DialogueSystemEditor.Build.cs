@@ -6,8 +6,10 @@ public class DialogueSystemEditor : ModuleRules
 {
     public DialogueSystemEditor(ReadOnlyTargetRules Target) : base (Target)
 	{
+        //PCHUsage = ModuleRules.PCHUsageMode.NoSharedPCHs;
+       // PrivatePCHHeaderFile = "Private/DialogueSystemEditorPrivatePCH.h";
 
-		PrivateIncludePaths.AddRange(
+        PrivateIncludePaths.AddRange(
             new string[] { "DialogueSystemEditor/Private" });
 
         PublicDependencyModuleNames.AddRange(
@@ -26,6 +28,7 @@ public class DialogueSystemEditor : ModuleRules
                 "EditorStyle",
                 "InputCore",
                 "LevelSequence",
+                "CinematicCamera",
                 "DialogueSystem"
 			}
 		);

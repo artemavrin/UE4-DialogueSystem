@@ -5,6 +5,13 @@
 #define DIALOGUESYSTEMEDITOR_MODULE_NAME "DialogueSystemEditor"
 
 #include "ModuleManager.h"
+#include "AssetToolsModule.h"
+
+#include "QuestBookAssetTypeActions.h"
+#include "DialogueSystemStyle.h"
+#include "QuestBookEditor/QuestBookEditorCustomization.h"
+#include "BehaviorTreeEditor/QuestionCustomization.h"
+#include "BehaviorTreeEditor/ShowPhrasesCustomization.h"
 
 //////////////////////////////////////////////////////////////////////////
 // IDialogueSystemModule

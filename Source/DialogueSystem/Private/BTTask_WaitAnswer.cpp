@@ -222,7 +222,7 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 			}
 		}
 
-		if (DialogueCinematicOptions.bPlaySequence && !DialogueCinematicOptions.Sequence.Equals("None"))
+		if (DialogueCinematicOptions.bPlaySeq && !DialogueCinematicOptions.Sequence.Equals("None"))
 		{
 			for (TActorIterator<ALevelSequenceActor> It(OwnerActor->GetWorld()); It; ++It)
 			{
@@ -230,7 +230,7 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 				if (LevelSequenceActor && LevelSequenceActor->GetName().Equals(DialogueCinematicOptions.Sequence))
 				{
 					//LevelSequenceActor->bLooping = DialogueCinematicOptions.bLoop;
-					LevelSequenceActor->PostInitializeComponents();
+					//LevelSequenceActor->PostInitializeComponents();
 					break;
 				}
 			}
@@ -276,7 +276,7 @@ void UBTTask_WaitAnswer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		{
 			MatineeActor->Stop();
 		}
-		if (DialogueCinematicOptions.bPlaySequence && LevelSequenceActor)
+		if (DialogueCinematicOptions.bPlaySeq && LevelSequenceActor)
 		{
 			//LevelSequenceActor->Stop();
 		}

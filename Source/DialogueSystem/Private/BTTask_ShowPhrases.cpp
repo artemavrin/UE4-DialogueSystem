@@ -211,7 +211,36 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 			// camera
 			if (DialogueCameraOptions.bUseCamera)
 			{
-				if (!DialogueCameraOptions.CameraToView.IsNone() && !DialogueCameraOptions.PlayerCamera.IsNone() && !DialogueCinematicOptions.bPlaySequence)
+				BlackboardComp = OwnerComp.GetBlackboardComponent();
+				UCineCameraComponent* CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.WideAngleCamera.SelectedKeyName));
+
+				if (DialogueCinematicOptions.bDialogueCamType != EDialogueCameraType::None)
+				{
+					switch (DialogueCinematicOptions.bDialogueCamType)
+					{
+					case EDialogueCameraType::WideAngle:
+						 CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.WideAngleCamera.SelectedKeyName));
+						break;
+					case EDialogueCameraType::BehindPersonA:
+						CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.BehindPersonACamera.SelectedKeyName));
+						break;
+					case EDialogueCameraType::CloseupPersonA:
+						CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.CloseupPersonACamera.SelectedKeyName));
+						break;
+					case EDialogueCameraType::BehindPersonB:
+						CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.BehindPersonBCamera.SelectedKeyName));
+						break;
+					case EDialogueCameraType::CloseupPersonB:
+						CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.CloseupPersonBCamera.SelectedKeyName));
+						break;
+					default:
+						CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.WideAngleCamera.SelectedKeyName));
+						break;
+					}
+				}
+				SetActiveDialogueCamera(CameraToView);
+				/*
+				if (!DialogueCameraOptions.CameraToView.IsNone() && !DialogueCameraOptions.PlayerCamera.IsNone() && !DialogueCinematicOptions.bPlaySeq)
 				{
 					FName CameraToViewKeyName = DialogueCameraOptions.CameraToView.SelectedKeyName;
 					BlackboardComp = OwnerComp.GetBlackboardComponent();
@@ -233,6 +262,7 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 						}
 					}
 				}
+				*/
 				
 			}
 			// cinematic
@@ -249,14 +279,14 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 					}
 				}
 			}
-			if (DialogueCinematicOptions.bPlaySequence && !DialogueCinematicOptions.Sequence.Equals("None"))
+			if (DialogueCinematicOptions.bPlaySeq && !DialogueCinematicOptions.Sequence.Equals("None"))
 			{
 				for (TActorIterator<ALevelSequenceActor> It(OwnerActor->GetWorld()); It; ++It)
 				{
 					LevelSequenceActor = *It;
 					if (LevelSequenceActor && LevelSequenceActor->GetName().Equals(DialogueCinematicOptions.Sequence))
 					{
-						LevelSequenceActor->bAutoPlay = DialogueCinematicOptions.bAutoPlay;
+					//	LevelSequenceActor->bAutoPlay = DialogueCinematicOptions.bAutoPlay;
 					//	LevelSequenceActor->PostInitializeComponents();
 						LevelSequenceActor->InitializePlayer();
 						break;
@@ -426,12 +456,24 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 		}
 
 		// cinematic
-		if (DialogueCinematicOptions.bPlaySequence && LevelSequenceActor)
+		if (DialogueCinematicOptions.bPlaySeq && LevelSequenceActor)
 		{
 			LevelSequenceActor->SequencePlayer->Stop();
 			//LevelSequenceActor->Stop();
 		}
 	}
+}
+void UBTTask_ShowPhrases::SetActiveDialogueCamera(UCineCameraComponent* cineCam)
+{
+	activeDialogueCam = cineCam;
+}
+
+
+UCineCameraComponent* UBTTask_ShowPhrases::GetActiveDialogueCamera()
+{
+	UCineCameraComponent* cineCam = nullptr;
+	cineCam = activeDialogueCam;
+	return cineCam;
 }
 
 void UBTTask_ShowPhrases::ShowNewChar()

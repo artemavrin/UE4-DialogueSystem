@@ -4,11 +4,6 @@
 #include "DialogueSystemEditorPrivatePCH.h"
 #include "QuestionCustomization.h"
 
-#include "DetailLayoutBuilder.h"
-#include "DetailWidgetRow.h"
-#include "IDetailPropertyRow.h"
-#include "DetailCategoryBuilder.h"
-
 #define LOCTEXT_NAMESPACE "DialogueSystem"
 
 TSharedRef<IDetailCustomization> FQuestionDetails::MakeInstance()

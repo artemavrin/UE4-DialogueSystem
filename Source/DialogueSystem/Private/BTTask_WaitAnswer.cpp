@@ -14,6 +14,7 @@
 #include "BTTask_ShowPhrases.h"
 #include "BTTask_CloseDialogue.h"
 #include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
+#include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
 #include "UObjectToken.h"
 
 #define LOCTEXT_NAMESPACE "DialogueSystem"
@@ -221,6 +222,20 @@ EBTNodeResult::Type UBTTask_WaitAnswer::ExecuteTask(UBehaviorTreeComponent& Owne
 			}
 		}
 
+		if (DialogueCinematicOptions.bPlaySeq && !DialogueCinematicOptions.Sequence.Equals("None"))
+		{
+			for (TActorIterator<ALevelSequenceActor> It(OwnerActor->GetWorld()); It; ++It)
+			{
+				LevelSequenceActor = *It;
+				if (LevelSequenceActor && LevelSequenceActor->GetName().Equals(DialogueCinematicOptions.Sequence))
+				{
+					//LevelSequenceActor->bLooping = DialogueCinematicOptions.bLoop;
+					//LevelSequenceActor->PostInitializeComponents();
+					break;
+				}
+			}
+		}
+
 		// camera
 		if (DialogueCameraOptions.bUseCamera)
 		{
@@ -260,6 +275,10 @@ void UBTTask_WaitAnswer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		if (DialogueCinematicOptions.bPlayMatinee && MatineeActor)
 		{
 			MatineeActor->Stop();
+		}
+		if (DialogueCinematicOptions.bPlaySeq && LevelSequenceActor)
+		{
+			//LevelSequenceActor->Stop();
 		}
 		// Event Listener
 		UWidget* DialogueEventListener = WidgetTree->FindWidget(FName("DialogueEventListener"));

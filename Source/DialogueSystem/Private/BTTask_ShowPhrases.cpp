@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
+#include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
 #include "UserWidget.h"
 #include "WidgetComponent.h"
 #include "BTDialogueTypes.h"
@@ -210,7 +211,36 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 			// camera
 			if (DialogueCameraOptions.bUseCamera)
 			{
-				if (!DialogueCameraOptions.CameraToView.IsNone() && !DialogueCameraOptions.PlayerCamera.IsNone() && !DialogueCinematicOptions.bPlayMatinee)
+				BlackboardComp = OwnerComp.GetBlackboardComponent();
+				UCineCameraComponent* CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.WideAngleCamera.SelectedKeyName));
+
+				if (DialogueCinematicOptions.bDialogueCamType != EDialogueCameraType::None)
+				{
+					switch (DialogueCinematicOptions.bDialogueCamType)
+					{
+					case EDialogueCameraType::WideAngle:
+						 CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.WideAngleCamera.SelectedKeyName));
+						break;
+					case EDialogueCameraType::BehindPersonA:
+						CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.BehindPersonACamera.SelectedKeyName));
+						break;
+					case EDialogueCameraType::CloseupPersonA:
+						CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.CloseupPersonACamera.SelectedKeyName));
+						break;
+					case EDialogueCameraType::BehindPersonB:
+						CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.BehindPersonBCamera.SelectedKeyName));
+						break;
+					case EDialogueCameraType::CloseupPersonB:
+						CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.CloseupPersonBCamera.SelectedKeyName));
+						break;
+					default:
+						CameraToView = Cast<UCineCameraComponent>(BlackboardComp->GetValueAsObject(DialogueCameraOptions.WideAngleCamera.SelectedKeyName));
+						break;
+					}
+				}
+				SetActiveDialogueCamera(CameraToView);
+				/*
+				if (!DialogueCameraOptions.CameraToView.IsNone() && !DialogueCameraOptions.PlayerCamera.IsNone() && !DialogueCinematicOptions.bPlaySeq)
 				{
 					FName CameraToViewKeyName = DialogueCameraOptions.CameraToView.SelectedKeyName;
 					BlackboardComp = OwnerComp.GetBlackboardComponent();
@@ -232,6 +262,7 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 						}
 					}
 				}
+				*/
 				
 			}
 			// cinematic
@@ -248,24 +279,39 @@ EBTNodeResult::Type UBTTask_ShowPhrases::ExecuteTask(UBehaviorTreeComponent& Own
 					}
 				}
 			}
+			if (DialogueCinematicOptions.bPlaySeq && !DialogueCinematicOptions.Sequence.Equals("None"))
+			{
+				for (TActorIterator<ALevelSequenceActor> It(OwnerActor->GetWorld()); It; ++It)
+				{
+					LevelSequenceActor = *It;
+					if (LevelSequenceActor && LevelSequenceActor->GetName().Equals(DialogueCinematicOptions.Sequence))
+					{
+					//	LevelSequenceActor->bAutoPlay = DialogueCinematicOptions.bAutoPlay;
+					//	LevelSequenceActor->PostInitializeComponents();
+						LevelSequenceActor->InitializePlayer();
+						break;
+					}
+				}
+			}
 
 			// character animation
 			if (DialogueCharacterAnimationOptions.bPlayAnimation && !DialogueCharacterAnimationOptions.Mesh.IsNone() && DialogueCharacterAnimationOptions.Animation != nullptr)
 			{
 				FName MeshKeyName = DialogueCharacterAnimationOptions.Mesh.SelectedKeyName;
 				BlackboardComp = OwnerComp.GetBlackboardComponent();
-				Mesh = Cast<USkeletalMeshComponent>(BlackboardComp->GetValueAsObject(MeshKeyName));
+					Mesh = Cast<USkeletalMeshComponent>(BlackboardComp->GetValueAsObject(MeshKeyName));
 				if (Mesh)
 				{
 					UAnimInstance *AnimInst = Mesh->GetAnimInstance();
-					if (AnimInst)
+					Mesh->PlayAnimation(DialogueCharacterAnimationOptions.Animation,DialogueCharacterAnimationOptions.bLoop);
+					/*if (AnimInst)
 					{
 						AnimInst->PlaySlotAnimationAsDynamicMontage(DialogueCharacterAnimationOptions.Animation, 
 							DialogueCharacterAnimationOptions.AnimationBlendOptions.SlotNodeName,
 							DialogueCharacterAnimationOptions.AnimationBlendOptions.BlendInTime,
 							DialogueCharacterAnimationOptions.AnimationBlendOptions.BlendOutTime,
 							DialogueCharacterAnimationOptions.AnimationBlendOptions.InPlayRate);
-					}
+					}*/
 					if (DialogueCharacterAnimationOptions.bWaitEndOfAnimation)
 					{
 						UAnimSequenceBase* SequenceBase = DialogueCharacterAnimationOptions.Animation;
@@ -410,11 +456,24 @@ void UBTTask_ShowPhrases::ShowNewDialoguePhrase(bool bSkip)
 		}
 
 		// cinematic
-		if (DialogueCinematicOptions.bPlayMatinee && MatineeActor)
+		if (DialogueCinematicOptions.bPlaySeq && LevelSequenceActor)
 		{
-			MatineeActor->Stop();
+			LevelSequenceActor->SequencePlayer->Stop();
+			//LevelSequenceActor->Stop();
 		}
 	}
+}
+void UBTTask_ShowPhrases::SetActiveDialogueCamera(UCineCameraComponent* cineCam)
+{
+	activeDialogueCam = cineCam;
+}
+
+
+UCineCameraComponent* UBTTask_ShowPhrases::GetActiveDialogueCamera()
+{
+	UCineCameraComponent* cineCam = nullptr;
+	cineCam = activeDialogueCam;
+	return cineCam;
 }
 
 void UBTTask_ShowPhrases::ShowNewChar()
@@ -448,7 +507,7 @@ void UBTTask_ShowPhrases::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		CharacterAnimationDuration -= DeltaSeconds;
 		if (CharacterAnimationDuration <=0.0f && DialogueCharacterAnimationOptions.bLoop && !bTextFinished)
 		{
-			UAnimInstance *AnimInst = Mesh->GetAnimInstance();
+			/*
 			if (AnimInst)
 			{
 				AnimInst->PlaySlotAnimationAsDynamicMontage(DialogueCharacterAnimationOptions.Animation,
@@ -457,6 +516,7 @@ void UBTTask_ShowPhrases::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 					DialogueCharacterAnimationOptions.AnimationBlendOptions.BlendOutTime,
 					DialogueCharacterAnimationOptions.AnimationBlendOptions.InPlayRate);
 			}
+			*/
 			UAnimSequenceBase* SequenceBase = DialogueCharacterAnimationOptions.Animation;
 			CharacterAnimationDuration = SequenceBase->SequenceLength / SequenceBase->RateScale;
 		}

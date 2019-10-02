@@ -1,7 +1,7 @@
 //Copyright (c) 2016 Artem A. Mavrin and other contributors
 
 #pragma once
-#include "DialogueSystemPrivatePCH.h"
+//#include "DialogueSystemPrivatePCH.h"
 #include "QuestBook.h"
 
 FQuest UQuestBook::GetQuest(int32 ID)

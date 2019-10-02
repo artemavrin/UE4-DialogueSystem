@@ -3,6 +3,7 @@
 #include "ShowPhrasesCustomization.h"
 #include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
 
+#include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
 #include "IDetailChildrenBuilder.h"
 
 #define LOCTEXT_NAMESPACE "DialogueSystem"
@@ -206,6 +207,100 @@ void FCinematicOptionsCustomization::CustomizeChildren(TSharedRef<class IPropert
 				]
 			]
 		];
+	bUseCam = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bUseCam));
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bUseCam)).ToSharedRef());
+
+
+	bPlaySeq= StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlaySeq));
+	bAutoPlay = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bAutoPlay));
+	Sequence = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, Sequence));
+
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bPlaySeq)).ToSharedRef());
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bAutoPlay)).ToSharedRef());
+
+	ChildBuilder.AddCustomRow(LOCTEXT("Sequence", "Sequence"))
+		.NameContent()
+		[
+			Sequence->CreatePropertyNameWidget()
+		]
+	.ValueContent()
+		.HAlign(HAlign_Fill)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.MaxWidth(109.0f)
+			[
+				SNew(SComboButton)
+				.OnGetMenuContent(this, &FCinematicOptionsCustomization::OnGetSequenceList)
+				.ContentPadding(FMargin(2.0f, 2.0f))
+				.ButtonContent()
+				[
+					SNew(STextBlock)
+					.Text(this, &FCinematicOptionsCustomization::GetCurrentSequenceName)
+					.Font(IDetailLayoutBuilder::GetDetailFont())
+				]
+			]
+		];
+
+	bDialogueCamType = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bDialogueCamType));
+	//CamType = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, CamType));
+	ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, bDialogueCamType)).ToSharedRef());
+	//ChildBuilder.AddProperty(StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBTDialogueCinematicOptions, CamType)).ToSharedRef()).Visibility(TAttribute<EVisibility>(this, &FCinematicOptionsCustomization::GetCamType));
+
+}
+
+/*
+EVisibility FCinematicOptionsCustomization::GetCamType() const
+{
+	uint8 Value;
+	bDialogueCamType->GetValue(Value);
+	if (Value == 1)
+	{
+		return EVisibility::Visible;
+	}
+	else
+	{
+		return EVisibility::Hidden;
+	}
+}
+*/
+void FCinematicOptionsCustomization::OnSettingSequenceChange(FString NewValue)
+{
+	Sequence->SetValueFromFormattedString(NewValue);
+}
+
+TSharedRef<SWidget> FCinematicOptionsCustomization::OnGetSequenceList() const
+{
+	FMenuBuilder MenuBuilder(true, NULL);
+
+	FUIAction ItemAction(FExecuteAction::CreateSP(this, &FCinematicOptionsCustomization::OnSettingSequenceChange, FString("None")));
+	MenuBuilder.AddMenuEntry(FText::FromString(TEXT("None")), TAttribute<FText>(), FSlateIcon(), ItemAction);
+
+	for (TObjectIterator<ALevelSequenceActor> It; It; ++It)
+	{
+		ALevelSequenceActor* LevelSequenceActor = *It;
+		FUIAction Action(FExecuteAction::CreateSP(this, &FCinematicOptionsCustomization::OnSettingSequenceChange, LevelSequenceActor->GetName()));
+		MenuBuilder.AddMenuEntry(FText::FromString(LevelSequenceActor->GetName()), TAttribute<FText>(), FSlateIcon(), Action);
+	}
+
+	return MenuBuilder.MakeWidget();
+}
+
+FText FCinematicOptionsCustomization::GetCurrentSequenceName() const
+{
+	FText SettingName;
+	Sequence->GetValueAsDisplayText(SettingName);
+	for (TObjectIterator<ALevelSequenceActor> It; It; ++It)
+	{
+		ALevelSequenceActor* LevelSequenceActor = *It;
+		if (SettingName.EqualTo(FText::FromString(LevelSequenceActor->GetName())))
+		{
+			return SettingName;
+		}
+	}
+
+	Sequence->SetValueFromFormattedString(FString("None"));
+	return FText::FromString("None");
 }
 
 void FCinematicOptionsCustomization::OnSettingMatineeChange(FString NewValue)

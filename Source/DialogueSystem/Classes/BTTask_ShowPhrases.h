@@ -2,14 +2,20 @@
 
 #pragma once
 #include "BehaviorTree/BTTaskNode.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
+#include "BTDialogueTypes.h"
 #include "BTContextNode_Interface.h"
 #include "Widget.h"
 #include "WidgetComponent.h"
 #include "UserWidget.h"
 #include "Camera/CameraComponent.h"
+#include "Runtime/CinematicCamera/Public/CineCameraComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Runtime/Engine/Classes/Matinee/MatineeActor.h"
+#include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
 #include "BTTask_ShowPhrases.generated.h"
+
 
 
 /**
@@ -20,9 +26,15 @@ class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode, public IBTCon
 {
 	GENERATED_UCLASS_BODY()
 
+
+	//UCineCameraComponent* GetActiveDialogueCamera();
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
+
+	UCineCameraComponent* activeDialogueCam;
+
 	virtual FString GetStaticDescription() const override;
-	
+	void SetActiveDialogueCamera(UCineCameraComponent* cineCam);
 	void ShowNewDialoguePhrase(bool bSkip);
 	void ShowNewChar();
 	UWidget* GetEventListener(UWidgetTree* WidgetTree);
@@ -71,6 +83,9 @@ class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode, public IBTCon
 	UPROPERTY(EditInstanceOnly, Category = Description)
 	uint32 bShowPropertyDetails : 1;
 
+
+	UFUNCTION(BlueprintCallable, Category = "DialogueSystem|Dialogue")
+		UCineCameraComponent* GetActiveDialogueCamera();
 	int32 ShowingNumPhrase;
 	int32 PhrasesCount;
 	bool bTextFinished;
@@ -88,6 +103,7 @@ class DIALOGUESYSTEM_API UBTTask_ShowPhrases : public UBTTaskNode, public IBTCon
 	UAudioComponent* GeneralAudioComponent;
 	UAudioComponent* PhraseAudioComponent;
 	AMatineeActor* MatineeActor;
+	ALevelSequenceActor* LevelSequenceActor;
 
 	int32 CurrentCharNum;
 	TArray<TCHAR> FullString;

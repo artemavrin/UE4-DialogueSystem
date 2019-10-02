@@ -5,8 +5,7 @@ public class DialogueSystem : ModuleRules
 {
 	public DialogueSystem(ReadOnlyTargetRules Target) : base (Target)
 	{
-       // PCHUsage = ModuleRules.PCHUsageMode.NoSharedPCHs;
-       //PrivatePCHHeaderFile = "Private/DialogueSystemPrivatePCH.h";
+        PrivatePCHHeaderFile = "Private/DialogueSystemPrivatePCH.h";
 
         PrivateIncludePaths.AddRange(
 			new string[] {"DialogueSystem/Private"});

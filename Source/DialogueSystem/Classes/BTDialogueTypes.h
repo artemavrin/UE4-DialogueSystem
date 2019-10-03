@@ -126,7 +126,7 @@ struct DIALOGUESYSTEM_API FBTDialogueSoundOptions
 
 	/** CUE to play */
 	UPROPERTY(EditInstanceOnly, Category = Sound)
-	USoundCue* SoundToPlay;
+		USoundCue* SoundToPlay;
 };
 
 USTRUCT()
@@ -178,9 +178,34 @@ struct DIALOGUESYSTEM_API FBTDialogueCameraOptions
 	UPROPERTY(EditInstanceOnly, Category = Camera)
 	FBlackboardKeySelector CameraToView;
 
+	/**Dialogue Rig reference*/
+	UPROPERTY(EditInstanceOnly, Category = Camera)
+		FBlackboardKeySelector BehindPersonACamera;
+	UPROPERTY(EditInstanceOnly, Category = Camera)
+		FBlackboardKeySelector CloseupPersonACamera;
+	UPROPERTY(EditInstanceOnly, Category = Camera)
+		FBlackboardKeySelector BehindPersonBCamera;
+	UPROPERTY(EditInstanceOnly, Category = Camera)
+		FBlackboardKeySelector CloseupPersonBCamera;
+	UPROPERTY(EditInstanceOnly, Category = Camera)
+		FBlackboardKeySelector WideAngleCamera;
+		
 	/** Player camera*/
 	UPROPERTY(EditInstanceOnly, Category = Camera)
 	FBlackboardKeySelector PlayerCamera;
+};
+
+
+UENUM(BlueprintType)
+enum class EDialogueCameraType :uint8
+{
+	None = 0,
+	BehindPersonA = 1 UMETA(DisplayName = "BehindA"),
+	CloseupPersonA = 2 UMETA(DisplayName = "CloseupA"),
+	BehindPersonB = 3 UMETA(DisplayName = "BehindB"),
+	CloseupPersonB = 4 UMETA(DisplayName = "CloseupB"),
+	WideAngle = 5 UMETA(DisplayName = "WideAngle"),
+
 };
 
 USTRUCT(BlueprintType)
@@ -188,17 +213,34 @@ struct DIALOGUESYSTEM_API FBTDialogueCinematicOptions
 {
 	GENERATED_USTRUCT_BODY()
 
-	/** Enable to play Matinee */
+		/** Enable to play Matinee */
+		UPROPERTY(EditInstanceOnly, Category = Cinematic)
+		bool bPlayMatinee;
+
+	/** Matinee*/
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Cinematic)
+		FString Matinee;
+	/** Enable to play Sequence */
 	UPROPERTY(EditInstanceOnly, Category = Cinematic)
-	bool bPlayMatinee;
+	bool bPlaySeq;
 
 	/** Loop Matinee */
 	UPROPERTY(EditInstanceOnly, Category = Cinematic)
 	bool bLoop;
 
-	/** Matinee*/
+	/** Autoplay Sequence */
+	UPROPERTY(EditInstanceOnly, Category = Cinematic)
+	bool bAutoPlay;
+
+	UPROPERTY(EditInstanceOnly, Category = Cinematic)
+		bool bUseCam;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadwrite, Category = Cinematic)
+		EDialogueCameraType bDialogueCamType;
+
+	/** Sequence*/
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Cinematic)
-	FString Matinee;
+	FString Sequence;
 
 };
 

@@ -11,15 +11,15 @@
 	"MarketplaceURL": "",
 	"SupportURL": "",
 	"Modules": [
-    {
-      "Name": "DialogueSystem",
-      "Type": "Runtime",
-      "LoadingPhase": "PreDefault"
-    },
-    {
-      "Name" : "DialogueSystemEditor",
-      "Type" : "Editor"
-	}
+		{
+		  "Name": "DialogueSystem",
+		  "Type": "Runtime",
+		  "LoadingPhase": "PreDefault"
+		},
+		{
+		  "Name" : "DialogueSystemEditor",
+		  "Type" : "Editor"
+		}
 	],
 	"EnabledByDefault": false,
 	"CanContainContent": false,

@@ -1,5 +1,4 @@
 //Copyright (c) 2016 Artem A. Mavrin and other contributors
-
 using UnrealBuildTool;
 
 public class DialogueSystem : ModuleRules
@@ -20,6 +19,9 @@ public class DialogueSystem : ModuleRules
                 "UMG",
                 "SlateCore",
                 "Slate",
+                "LevelSequence",
+                "CinematicCamera",
+                "MovieScene",
 				"AIModule",
                 "GameplayTasks"
 			}
